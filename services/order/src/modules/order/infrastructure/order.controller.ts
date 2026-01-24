@@ -1,7 +1,9 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { PlaceOrderUseCase } from '../application/use-cases/place-order.use-case';
 import { PlaceOrderCommand } from '../application/commands/place-order.command';
+import { ApiKeyGuard } from '../../../../../shared/auth/api-key.guard';
 
+@UseGuards(ApiKeyGuard)
 @Controller('orders')
 export class OrderController {
   constructor(private readonly placeOrderUseCase: PlaceOrderUseCase) {}
