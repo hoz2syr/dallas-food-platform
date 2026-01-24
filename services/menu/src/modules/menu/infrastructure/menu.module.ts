@@ -1,4 +1,8 @@
 import { Module } from '@nestjs/common';
+import { CreateMenuUseCase } from '../../application/use-cases/create-menu.use-case';
 
-@Module({})
+@Module({
+	providers: [CreateMenuUseCase],
+	exports: [CreateMenuUseCase],
+})
 export class MenuModule {}
