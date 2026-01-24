@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS orders (
+  id TEXT PRIMARY KEY,
+  status TEXT NOT NULL,
+  created_at TIMESTAMP NOT NULL
+);

@@ -1,4 +1,6 @@
 import { Client } from 'pg';
+import * as fs from 'fs';
+import * as path from 'path';
 
 const client = new Client({
   host: process.env.POSTGRES_HOST || process.env.POSTGRES_SERVICE || 'postgres',
@@ -8,10 +10,21 @@ const client = new Client({
   password: process.env.POSTGRES_PASSWORD || 'dallas'
 });
 
-// Connect immediately; consumers can use the exported client.
-client.connect().catch((err) => {
-  // Do not throw here; connection may be retried by orchestrator.
-  console.error('Postgres client connection error:', err.message || err);
-});
+// Connect and run initial schema migration. Fail fast if migration fails.
+(async () => {
+  try {
+    await client.connect();
+    const migrationsDir = path.join(__dirname, 'migrations');
+    const migrationFile = path.join(migrationsDir, '001-create-orders-table.sql');
+    if (fs.existsSync(migrationFile)) {
+      const sql = fs.readFileSync(migrationFile, 'utf8');
+      await client.query(sql);
+    }
+  } catch (err) {
+    console.error('Postgres initialization error:', err && (err.message || err));
+    // Fail fast
+    process.exit(1);
+  }
+})();
 
 export { client };
