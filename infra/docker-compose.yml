@@ -9,3 +9,11 @@ services:
   #   image: core:latest
   #   ports:
   #     - "8080:8080"
+  order-service:
+    build:
+      context: ..
+      dockerfile: services/order/Dockerfile
+    container_name: dallas-order-service
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
