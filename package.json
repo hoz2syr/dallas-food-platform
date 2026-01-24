@@ -3,7 +3,8 @@
   "private": true,
   "packageManager": "pnpm@9",
   "scripts": {
-    "lint": "echo 'lint placeholder'",
-    "test": "echo 'test placeholder'"
+    "lint": "eslint . --ext .ts",
+    "test": "echo 'test placeholder'",
+    "typecheck": "tsc --noEmit"
   }
 }
