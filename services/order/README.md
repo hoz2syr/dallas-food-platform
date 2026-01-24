@@ -21,3 +21,8 @@ Project layout (created):
 - `src/modules/order/infrastructure/`
 
 No business logic implemented yet.
+
+Reference implementation
+------------------------
+
+Order Service is the reference implementation for all backend services. New services should use the `services/order` layout and behavior as the canonical blueprint. See the higher-level blueprint for rules and steps: [SERVICE-BLUEPRINT.md](docs/SERVICE-BLUEPRINT.md)
