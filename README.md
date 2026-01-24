@@ -35,3 +35,12 @@ Production:
 
 - Provide the required environment variables through your deployment platform's secret/config system. Do not check real secrets into the repo.
 
+## API Contracts & Documentation
+
+Each service exposes Swagger/OpenAPI documentation at the `/docs` path when running locally.
+
+- Order Service docs: `http://localhost:<PORT>/docs` (default port per service)
+- Menu Service docs: `http://localhost:<PORT>/docs`
+
+Reference contract documentation is available in `docs/API-CONTRACTS.md`.
+

@@ -2,13 +2,24 @@ import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { PlaceOrderUseCase } from '../application/use-cases/place-order.use-case';
 import { PlaceOrderCommand } from '../application/commands/place-order.command';
 import { ApiKeyGuard } from '../../../../../shared/auth/api-key.guard';
+import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 
 @UseGuards(ApiKeyGuard)
+@ApiTags('Orders')
 @Controller('orders')
 export class OrderController {
   constructor(private readonly placeOrderUseCase: PlaceOrderUseCase) {}
 
   @Post()
+  @ApiOperation({ summary: 'Place a new order' })
+  @ApiBody({
+    schema: {
+      example: { orderId: 'o1', items: ['p1', 'p2'] },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Order placed', schema: { example: { id: 'o1', status: 'PENDING', createdAt: '2026-01-01T00:00:00.000Z' } } })
+  @ApiResponse({ status: 400, description: 'Bad Request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async create(@Body() body: { orderId: string; items: string[] }) {
     const command: PlaceOrderCommand = {
       orderId: body.orderId,
