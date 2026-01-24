@@ -1,0 +1,5 @@
+{
+  "name": "Dev Container (placeholder)",
+  "image": "mcr.microsoft.com/devcontainers/base:latest",
+  "features": {}
+}

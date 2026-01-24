@@ -1,0 +1,1 @@
+To contribute, open an issue or submit a pull request describing your change. Follow existing ADRs in `docs/DECISIONS` for architectural guidance and include tests and documentation as appropriate.

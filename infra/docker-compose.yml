@@ -1,0 +1,11 @@
+version: "3.8"
+
+# Placeholder docker-compose file
+# Define services and networks here according to the hybrid architecture
+
+services:
+  # example:
+  # core:
+  #   image: core:latest
+  #   ports:
+  #     - "8080:8080"
