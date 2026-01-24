@@ -12,3 +12,10 @@ Why no persistence or framework code?
 ----------------------------------
 
 The domain layer is intentionally framework-agnostic: it contains business rules, invariants, and events only. Persistence, messaging, and framework adapters live in the infrastructure layer to keep the domain pure and easily testable.
+
+Error Model
+-----------
+
+Domain errors are defined in the `errors` folder and express business-rule violations (for example, `EmptyOrderItemsError` and `InvalidOrderStateError`). Keeping errors in the domain ensures that the domain speaks its own language and that higher layers (application/controllers) can map these errors to appropriate responses or retries.
+
+The application layer should allow domain errors to propagate so they can be handled in a context-aware manner (e.g., translated into HTTP responses or retries by an orchestration layer).

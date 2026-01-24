@@ -1,5 +1,6 @@
 import { OrderStatus } from '../value-objects/order-status';
 import { OrderPlacedEvent } from '../events/order-placed.event';
+import { EmptyOrderItemsError, InvalidOrderStateError } from '../errors/order-domain.error';
 
 export interface OrderItem {
   productId: string;
@@ -31,10 +32,10 @@ export class Order {
 
   place(): OrderPlacedEvent {
     if (this._status !== OrderStatus.CREATED) {
-      throw new Error('Only created orders can be placed');
+      throw new InvalidOrderStateError('Only orders in CREATED state can be placed');
     }
     if (this._items.length === 0) {
-      throw new Error('Cannot place an order with no items');
+      throw new EmptyOrderItemsError();
     }
     this._status = OrderStatus.PLACED;
     return new OrderPlacedEvent(this.id);
@@ -42,8 +43,8 @@ export class Order {
 
   cancel(): void {
     if (this._status === OrderStatus.CANCELLED) return;
-    if (this._status === OrderStatus.PLACED) {
-      // business rules for cancelling a placed order would be here
+    if (this._status !== OrderStatus.PLACED) {
+      throw new InvalidOrderStateError('Only PLACED orders can be cancelled');
     }
     this._status = OrderStatus.CANCELLED;
   }
