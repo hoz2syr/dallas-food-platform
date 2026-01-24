@@ -14,24 +14,24 @@ Vision: Build a resilient, extensible food ordering platform for Dallas.
 
 Follow ADRs in `docs/DECISIONS` for architecture and technology guidance.
 
-## API Key Authentication
+Follow ADRs in `docs/DECISIONS` for architecture and technology guidance.
 
-Services in this platform require a simple API key for request authentication.
+## Configuration & Environments
 
-- Header: `x-api-key`
-- Environment variable: `API_KEY` (must be set in the service environment)
+This repository expects services to read configuration explicitly from environment variables. Each service exposes a small `getAppConfig()` helper under `src/config/app.config.ts` that validates required values and throws early if any required variable is missing.
 
-Example curl (replace <key> with your API key):
+Required environment variables (per service):
 
-```bash
-curl -X POST http://localhost:3001/menus \
-	-H "x-api-key: <key>" \
-	-H "Content-Type: application/json" \
-	-d '{"menuId":"m1","name":"My Menu","items":[{"id":"i1","name":"Item","price":1}]}'
-```
+- `PORT` - numeric port the HTTP server listens on
+- `DATABASE_URL` - database connection string (Postgres)
+- `API_KEY` - API key used to authenticate incoming requests
 
-Unauthorized requests receive HTTP 401 with body:
+Local development:
 
-```json
-{ "error": "UNAUTHORIZED", "message": "Invalid API key" }
-```
+1. Copy `.env.example` to `.env` and edit values as needed.
+2. Start services using your preferred approach (local, Docker Compose).
+
+Production:
+
+- Provide the required environment variables through your deployment platform's secret/config system. Do not check real secrets into the repo.
+
