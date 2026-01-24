@@ -19,3 +19,8 @@ Error Model
 Domain errors are defined in the `errors` folder and express business-rule violations (for example, `EmptyOrderItemsError` and `InvalidOrderStateError`). Keeping errors in the domain ensures that the domain speaks its own language and that higher layers (application/controllers) can map these errors to appropriate responses or retries.
 
 The application layer should allow domain errors to propagate so they can be handled in a context-aware manner (e.g., translated into HTTP responses or retries by an orchestration layer).
+
+Repository Boundary
+-------------------
+
+The `repositories` folder defines interfaces that represent the persistence boundary (for example, `OrderRepository`). These interfaces live in the domain to express the required operations against aggregates without coupling the domain to any storage technology. Implementations of these interfaces belong in the infrastructure layer (adapters) and are intentionally omitted here.
