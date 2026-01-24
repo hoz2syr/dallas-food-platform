@@ -8,3 +8,12 @@ Key points:
 - Communication: prefer asynchronous events for eventual consistency; sync APIs for critical paths.
 
 See original architecture document.
+
+## Technology Baseline
+
+- Language: TypeScript
+- Runtime: Node.js (LTS)
+- Backend framework direction: NestJS
+- Package manager: pnpm
+- API style: REST-first, event-ready
+- Infra baseline: Docker (local-first)
