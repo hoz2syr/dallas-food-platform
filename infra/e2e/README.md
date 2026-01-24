@@ -1,3 +1,25 @@
+# Menu service E2E smoke tests
+
+Prerequisites:
+
+- Docker and Docker Compose installed and available on PATH
+- A Unix-compatible shell (bash) to run the script
+
+Run the Menu E2E smoke tests:
+
+```bash
+chmod +x infra/e2e/run-menu-e2e.sh
+infra/e2e/run-menu-e2e.sh
+```
+
+What the script does:
+
+- Brings up the Compose stack defined in `infra/docker-compose.yml` (builds if needed)
+- Waits until the Menu service responds to a POST /menus
+- Runs two checks:
+  - POST /menus with a valid payload → expects HTTP 200
+  - POST /menus with empty `items` → expects HTTP 400
+- Brings the Compose stack down on completion or failure
 # Order service smoke tests (E2E)
 
 This folder contains a small smoke test runner for the `order` service. It is intended to be a quick verification that the service and its dependencies start, respond to a health check, and accept a basic `POST /orders` request.
