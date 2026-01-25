@@ -1,0 +1,20 @@
+/* Minimal global styles for UI skeleton (no styling frameworks) */
+:root {
+  --header-bg: #f5f5f5;
+}
+
+.app-header {
+  background: var(--header-bg);
+  padding: 12px 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.app-nav {
+  display: flex;
+  gap: 16px;
+}
+
+.app-nav a {
+  color: #111;
+  text-decoration: none;
+}

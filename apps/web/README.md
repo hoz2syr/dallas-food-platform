@@ -48,6 +48,16 @@ The cart types are defined under `src/types/cart.types.ts`.
 
 Note: There is no UI integration in this scaffold — the module is prepared for future consumption by UI code.
 
+UI skeleton
+-----------
+
+This scaffold now includes a minimal UI skeleton with routing placeholders and a layout shell. The purpose is structural only — there is no behavior wired up to APIs or state.
+
+- Pages present: `/` (landing), `/menu` (menu placeholder), `/cart` (cart placeholder).
+- Layout provides a simple header and navigation. Styles are plain CSS under `src/styles/base.css`.
+
+Explicitly: "UI has no behavior yet"
+
 Running locally
 ---------------
 
