@@ -1,4 +1,4 @@
-export type HttpOptions = RequestInit & { skipApiKey?: boolean };
+export type HttpOptions = RequestInit;
 
 export async function httpFetch(path: string, options: HttpOptions = {}) {
   const base = process.env.NEXT_PUBLIC_API_BASE_URL || '';
@@ -9,7 +9,7 @@ export async function httpFetch(path: string, options: HttpOptions = {}) {
     'Content-Type': 'application/json',
   };
 
-  if (!options.skipApiKey && apiKey) {
+  if (apiKey) {
     headers['x-api-key'] = apiKey;
   }
 
