@@ -35,6 +35,12 @@ Examples:
 { "code": "INTERNAL_ERROR", "message": "An internal error occurred" }
 ```
 
+- Unauthorized (missing or invalid API key):
+
+```json
+{ "code": "UNAUTHORIZED", "message": "Invalid API key" }
+```
+
 ---
 
 ## Order Service
