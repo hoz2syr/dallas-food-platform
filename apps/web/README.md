@@ -33,6 +33,21 @@ Separation from UI
 
 The API client layer is intentionally separated from UI components and state. UI and pages should import the client functions and types, but none are included in this scaffold.
 
+Cart state abstraction
+----------------------
+
+This scaffold now includes a frontend cart state boundary as a pure TypeScript module (no React integration). The cart store lives at `src/lib/cart/cart-store.ts` and exposes functions:
+
+- `addItem(item, quantity?)` — add a product to the cart
+- `removeItem(id)` — remove product by id
+- `updateQuantity(id, quantity)` — set quantity (throws on negative)
+- `clear()` — clear the cart
+- `getState()` — returns the current `Cart` snapshot
+
+The cart types are defined under `src/types/cart.types.ts`.
+
+Note: There is no UI integration in this scaffold — the module is prepared for future consumption by UI code.
+
 Running locally
 ---------------
 
