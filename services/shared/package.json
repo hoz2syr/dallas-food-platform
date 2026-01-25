@@ -1,0 +1,10 @@
+{
+  "name": "@dallas/shared",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "license": "MIT",
+  "dependencies": {
+    "@nestjs/common": "^10.0.0"
+  }
+}

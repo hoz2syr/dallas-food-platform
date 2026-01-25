@@ -20,8 +20,9 @@ const client = new Client({
       const sql = fs.readFileSync(migrationFile, 'utf8');
       await client.query(sql);
     }
-  } catch (err) {
-    console.error('Postgres initialization error:', err && (err.message || err));
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('Postgres initialization error:', message);
     // Fail fast
     process.exit(1);
   }

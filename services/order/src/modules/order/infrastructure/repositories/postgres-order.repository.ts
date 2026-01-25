@@ -1,6 +1,6 @@
 import { Order } from '../../../domain/entities/order.entity';
 import { OrderRepository } from '../../../domain/repositories/order.repository';
-import { client } from '../../../../../../services/order/db/postgres.client';
+import { client } from '../../../../../db/postgres.client';
 
 export class PostgresOrderRepository implements OrderRepository {
   async save(order: Order): Promise<void> {
