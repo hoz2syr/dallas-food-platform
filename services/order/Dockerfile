@@ -1,37 +1,36 @@
 # Builder
 FROM node:20-alpine AS builder
-WORKDIR /app
+WORKDIR /workspace
 
-# Enable corepack and pnpm
-RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+# Enable corepack and pin pnpm version
+RUN corepack enable && corepack prepare pnpm@9.31.0 --activate
 
-# Copy root tsconfig for tsc project references if build context is repo root
-COPY tsconfig.base.json ./
+# Copy workspace manifests first for better layer caching
+COPY package.json pnpm-workspace.yaml tsconfig.base.json ./
+COPY pnpm-lock.yaml ./
 
-# Copy package files for the service
+# Copy only the target package manifest to leverage cache when package.json changes
 COPY services/order/package.json ./services/order/package.json
 
-WORKDIR /app/services/order
+# Install all workspace dependencies deterministically
+RUN pnpm install --frozen-lockfile
 
-# Install dependencies for the order service only
-RUN pnpm install --offline || pnpm install --shamefully-hoist --no-frozen-lockfile || pnpm install
+# Copy full repository
+COPY . .
 
-# Copy service source
-COPY services/order .
+# Build only the order service using workspace filters
+WORKDIR /workspace/services/order
+RUN pnpm --filter ./services/order... run build
 
-# Build
-RUN pnpm run build
-
-# Runtime
+# Runtime image
 FROM node:20-alpine AS runtime
 WORKDIR /app/services/order
 
-# Enable corepack and pnpm in runtime
-RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
+RUN corepack enable && corepack prepare pnpm@9.31.0 --activate
 
-# Copy built files and node_modules from builder
-COPY --from=builder /app/services/order/dist ./dist
-COPY --from=builder /app/services/order/node_modules ./node_modules
+# Copy built artifacts and workspace node_modules
+COPY --from=builder /workspace/services/order/dist ./dist
+COPY --from=builder /workspace/node_modules ./node_modules
 
 EXPOSE 3000
 CMD ["node", "dist/main.js"]
