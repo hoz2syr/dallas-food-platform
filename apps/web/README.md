@@ -20,6 +20,19 @@ What is included
 - `src/lib/config/` — placeholder for future config helpers.
 - `src/components/`, `src/types/`, `src/styles/`, `public/` — folders prepared for future UI work.
 
+API client responsibilities
+-------------------------
+
+This scaffold includes a typed API client layer under `src/lib/api/` and shared API types under `src/types/api`.
+
+- `src/lib/api/http-client.ts`: low-level fetch wrapper — reads `NEXT_PUBLIC_API_BASE_URL` and injects `x-api-key` from `NEXT_PUBLIC_API_KEY`.
+- `src/lib/api/menu-api.ts` and `src/lib/api/order-api.ts`: typed client functions that use `http-client.ts` and throw normalized errors (`src/types/api/error.types.ts`).
+
+Separation from UI
+------------------
+
+The API client layer is intentionally separated from UI components and state. UI and pages should import the client functions and types, but none are included in this scaffold.
+
 Running locally
 ---------------
 
