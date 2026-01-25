@@ -1,8 +1,9 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, HttpException } from '@nestjs/common';
 import { PlaceOrderUseCase } from '../application/use-cases/place-order.use-case';
 import { PlaceOrderCommand } from '../application/commands/place-order.command';
 import { ApiKeyGuard } from '../../../../../shared/auth/api-key.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { mapToApiError } from '../../../../../shared/errors/http-exception.mapper';
 
 @UseGuards(ApiKeyGuard)
 @ApiTags('Orders')
@@ -26,11 +27,16 @@ export class OrderController {
       items: (body.items || []).map((p) => ({ productId: p, quantity: 1 }))
     };
 
-    const order = await this.placeOrderUseCase.execute(command);
-    return {
-      id: order.id,
-      status: order.status,
-      createdAt: order.createdAt
-    };
+    try {
+      const order = await this.placeOrderUseCase.execute(command);
+      return {
+        id: order.id,
+        status: order.status,
+        createdAt: order.createdAt
+      };
+    } catch (err) {
+      const mapped = mapToApiError(err);
+      throw new HttpException(mapped.body, mapped.status);
+    }
   }
 }

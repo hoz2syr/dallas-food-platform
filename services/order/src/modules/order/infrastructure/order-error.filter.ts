@@ -1,5 +1,6 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus } from '@nestjs/common';
-import { OrderDomainError, EmptyOrderItemsError, InvalidOrderStateError } from '../../domain/errors/order-domain.error';
+import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
+import { OrderDomainError } from '../../domain/errors/order-domain.error';
+import { mapToApiError } from '../../../../../shared/errors/http-exception.mapper';
 
 @Catch(OrderDomainError)
 export class OrderErrorFilter implements ExceptionFilter {
@@ -7,13 +8,7 @@ export class OrderErrorFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const res = ctx.getResponse();
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    if (exception instanceof EmptyOrderItemsError) {
-      status = HttpStatus.BAD_REQUEST;
-    } else if (exception instanceof InvalidOrderStateError) {
-      status = HttpStatus.CONFLICT;
-    }
-
-    res.status(status).json({ error: exception.name, message: exception.message });
+    const mapped = mapToApiError(exception);
+    res.status(mapped.status).json(mapped.body);
   }
 }

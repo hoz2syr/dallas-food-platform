@@ -7,8 +7,32 @@ This file documents the stable API contracts for the platform services.
 - Required header: `x-api-key` (value provided via `API_KEY` environment variable)
 - Error format for unauthorized requests:
 
+### Standard Error Response
+
+All error responses follow a consistent JSON shape:
+
 ```json
-{ "error": "UNAUTHORIZED", "message": "Invalid API key" }
+{
+  "code": "<ERROR_CODE>",
+  "message": "Human readable message",
+  "details": { /* optional extra information */ }
+}
+```
+
+The `code` is a short machine-friendly identifier (e.g. `EmptyOrderItemsError`, `InvalidMenuNameError`, or `INTERNAL_ERROR`).
+
+Examples:
+
+- Bad request due to empty order items:
+
+```json
+{ "code": "EmptyOrderItemsError", "message": "Order must contain at least one item" }
+```
+
+- Internal error fallback:
+
+```json
+{ "code": "INTERNAL_ERROR", "message": "An internal error occurred" }
 ```
 
 ---

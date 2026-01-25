@@ -1,10 +1,9 @@
-import { ExceptionFilter, Catch, ArgumentsHost } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Response } from 'express';
 import {
   MenuDomainError,
-  InvalidMenuNameError,
-  EmptyMenuItemsError,
 } from '../../domain/errors/menu-domain.error';
+import { mapToApiError } from '../../../../../shared/errors/http-exception.mapper';
 
 @Catch(MenuDomainError)
 export class MenuErrorFilter implements ExceptionFilter {
@@ -12,14 +11,7 @@ export class MenuErrorFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    let status = 500;
-
-    if (exception instanceof InvalidMenuNameError) {
-      status = 400;
-    } else if (exception instanceof EmptyMenuItemsError) {
-      status = 400;
-    }
-
-    response.status(status).json({ error: exception.name, message: exception.message });
+    const mapped = mapToApiError(exception);
+    response.status(mapped.status).json(mapped.body);
   }
 }

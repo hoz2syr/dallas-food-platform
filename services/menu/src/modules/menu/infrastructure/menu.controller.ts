@@ -1,7 +1,8 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, HttpException } from '@nestjs/common';
 import { CreateMenuUseCase } from '../../application/use-cases/create-menu.use-case';
 import { ApiKeyGuard } from '../../../../../shared/auth/api-key.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
+import { mapToApiError } from '../../../../../shared/errors/http-exception.mapper';
 
 @UseGuards(ApiKeyGuard)
 @ApiTags('Menus')
@@ -25,13 +26,16 @@ export class MenuController {
       name: body.name,
       items: body.items,
     };
-
-    const menu = this.createMenuUseCase.execute(command);
-
-    return {
-      id: menu.id,
-      name: menu.name,
-      createdAt: menu.createdAt,
-    };
+    try {
+      const menu = this.createMenuUseCase.execute(command);
+      return {
+        id: menu.id,
+        name: menu.name,
+        createdAt: menu.createdAt,
+      };
+    } catch (err) {
+      const mapped = mapToApiError(err);
+      throw new HttpException(mapped.body, mapped.status);
+    }
   }
 }
