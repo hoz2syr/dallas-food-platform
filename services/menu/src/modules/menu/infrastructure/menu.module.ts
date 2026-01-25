@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { CreateMenuUseCase } from '../../application/use-cases/create-menu.use-case';
 import { MenuController } from './menu.controller';
 import { MenuErrorFilter } from './menu-error.filter';
 import { PostgresMenuRepository } from './repositories/postgres-menu.repository';
+import { ApiKeyGuard } from '../../../../../shared/auth/api-key.guard';
 
 @Module({
 	controllers: [MenuController],
@@ -24,6 +25,10 @@ import { PostgresMenuRepository } from './repositories/postgres-menu.repository'
 		{
 			provide: APP_FILTER,
 			useClass: MenuErrorFilter,
+		},
+		{
+			provide: APP_GUARD,
+			useClass: ApiKeyGuard,
 		},
 	],
 	exports: [CreateMenuUseCase],

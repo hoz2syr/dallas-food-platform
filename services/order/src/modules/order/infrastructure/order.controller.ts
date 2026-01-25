@@ -1,11 +1,8 @@
-import { Controller, Post, Body, UseGuards, HttpException } from '@nestjs/common';
+import { Controller, Post, Body, HttpException } from '@nestjs/common';
 import { PlaceOrderUseCase } from '../application/use-cases/place-order.use-case';
 import { PlaceOrderCommand } from '../application/commands/place-order.command';
-import { ApiKeyGuard } from '../../../../../shared/auth/api-key.guard';
 import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { mapToApiError } from '../../../../../shared/errors/http-exception.mapper';
-
-@UseGuards(ApiKeyGuard)
 @ApiTags('Orders')
 @Controller('orders')
 export class OrderController {
