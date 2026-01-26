@@ -1,8 +1,10 @@
+"use client";
+
 import React, { useEffect, useState } from 'react';
 import { fetchMenus } from '../../lib/api/menu-api';
 import { addItem } from '../../lib/cart/cart-store';
 
-type Item = { id: string; name: string; price: number; };
+type Item = { id: string; name: string; price: number; image?: string };
 
 export default function MenuPage() {
   const [items, setItems] = useState<Item[]>([]);
@@ -16,7 +18,7 @@ export default function MenuPage() {
         if (!mounted) return;
         // flatten items from menus
         const all = menus.flatMap((m: any) => m.items || []);
-        setItems(all.map((it: any) => ({ id: it.id, name: it.name, price: it.price })));
+        setItems(all.map((it: any) => ({ id: it.id, name: it.name, price: it.price, image: it.image })));
       })
       .catch((err: any) => setError(err && err.message ? err.message : String(err)))
       .finally(() => setLoading(false));
@@ -24,21 +26,28 @@ export default function MenuPage() {
   }, []);
 
   if (loading) return <div>Loading menu...</div>;
-  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
+  if (error) return <div className="menu-error">Error: {error}</div>;
 
   return (
-    <div>
+    <div className="menu-page">
       <h2>Menu</h2>
-      <ul>
+      <div className="menu-grid">
         {items.map((it) => (
-          <li key={it.id} style={{ marginBottom: 8 }}>
-            <strong>{it.name}</strong> — ${it.price}{' '}
-            <button onClick={() => { try { addItem({ id: it.id, name: it.name, price: it.price }); } catch (e) { /* noop */ } }}>
+          <div key={it.id} className="card fade-in-up menu-card">
+            {it.image && (
+              <img src={it.image} alt={it.name} className="img-zoom menu-card-img" />
+            )}
+            <div className="menu-card-title">{it.name}</div>
+            <div className="small menu-card-price">${it.price}</div>
+            <button
+              className="btn btn-primary scale-in"
+              onClick={() => { try { addItem({ id: it.id, name: it.name, price: it.price }); } catch (e) { /* noop */ } }}
+            >
               Add to cart
             </button>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }

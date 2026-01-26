@@ -1,0 +1,27 @@
+/* أنماط أساسية لواجهة المطبخ */
+body {
+  font-family: 'Cairo', Arial, sans-serif;
+  background: #f9fafb;
+  margin: 0;
+  color: #222;
+}
+
+.order-card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+  min-width: 220px;
+}
+.order-id {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+.order-status {
+  color: #888;
+  margin-bottom: 8px;
+}
+.order-items {
+  padding-right: 18px;
+}

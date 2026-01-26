@@ -32,3 +32,26 @@ export async function fetchMenu(id: string): Promise<Menu> {
   const data = await handleResponse(res);
   return data as Menu;
 }
+
+export async function createMenu(menu: { menuId: string; name: string; items: any[] }): Promise<any> {
+  const res = await httpFetch('/menus', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(menu),
+  });
+  return handleResponse(res);
+}
+
+export async function updateMenu(id: string, menu: { name: string; items: any[] }): Promise<any> {
+  const res = await httpFetch(`/menus/${encodeURIComponent(id)}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(menu),
+  });
+  return handleResponse(res);
+}
+
+export async function deleteMenu(id: string): Promise<any> {
+  const res = await httpFetch(`/menus/${encodeURIComponent(id)}`, { method: 'DELETE' });
+  return handleResponse(res);
+}

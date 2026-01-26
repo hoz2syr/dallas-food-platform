@@ -3,7 +3,7 @@ FROM node:20-alpine AS builder
 WORKDIR /workspace
 
 # Enable corepack and pin pnpm version
-RUN corepack enable && corepack prepare pnpm@9.31.0 --activate
+RUN npm install -g pnpm@9.1.0
 
 # Copy workspace manifests first for better layer caching
 COPY package.json pnpm-workspace.yaml tsconfig.base.json ./
@@ -26,7 +26,7 @@ RUN pnpm --filter ./services/order... run build
 FROM node:20-alpine AS runtime
 WORKDIR /app/services/order
 
-RUN corepack enable && corepack prepare pnpm@9.31.0 --activate
+RUN npm install -g pnpm@9.1.0
 
 # Copy built artifacts and workspace node_modules
 COPY --from=builder /workspace/services/order/dist ./dist

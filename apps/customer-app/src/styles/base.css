@@ -1,0 +1,30 @@
+/* أنماط أساسية للواجهة */
+body {
+  font-family: 'Cairo', Arial, sans-serif;
+  background: #f8fafc;
+  margin: 0;
+  color: #222;
+}
+
+.main-btn {
+  background: #f7b731;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.main-btn:hover {
+  background: #e1a825;
+}
+
+.card {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #0001;
+  padding: 16px;
+  margin-bottom: 16px;
+}

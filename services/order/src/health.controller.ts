@@ -1,8 +1,9 @@
-import { Controller, Get } from '@nestjs/common';
-@Controller('health')
+@Controller()       
+@ApiTags('health')
 export class HealthController {
-  @Get()
-  health() {
-    return { status: 'ok', service: 'order' };
+  @Get('health')       
+  @ApiOkResponse({ type: HealthResponseDto })
+  getHealth(): HealthResponseDto {
+    return { status: 'OK', timestamp: new Date().toISOString() };
   }
 }

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from 'react';
 import { getState, updateQuantity, removeItem, clear } from '../../lib/cart/cart-store';
 import { placeOrder } from '../../lib/api/order-api';
@@ -50,25 +51,32 @@ export default function CartPage() {
   };
 
   return (
-    <div>
+    <div className="cart-page" style={{ maxWidth: 700, margin: '0 auto', padding: 24 }}>
       <h2>Cart</h2>
-      {error && <div style={{ color: 'red' }}>{error}</div>}
-      {cart.items.length === 0 && <div>Cart is empty</div>}
-      <ul>
+      {error && <div style={{ color: 'var(--danger)', marginBottom: 12 }}>{error}</div>}
+      {cart.items.length === 0 && <div className="card" style={{ textAlign: 'center', padding: 32 }}>Cart is empty</div>}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         {cart.items.map((it) => (
-          <li key={it.id} style={{ marginBottom: 8 }}>
-            {it.name} — ${it.price} x {it.quantity}{' '}
-            <button onClick={() => handleUpdate(it.id, it.quantity + 1)}>+</button>{' '}
-            <button onClick={() => handleUpdate(it.id, Math.max(0, it.quantity - 1))}>-</button>{' '}
-            <button onClick={() => handleRemove(it.id)}>Remove</button>
-          </li>
+          <div key={it.id} className="card fade-in-up" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: '1.1rem', marginBottom: 2 }}>{it.name}</div>
+              <div className="small">${it.price} x {it.quantity}</div>
+            </div>
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button className="btn btn-outline" onClick={() => handleUpdate(it.id, it.quantity + 1)}>+</button>
+              <button className="btn btn-outline" onClick={() => handleUpdate(it.id, Math.max(0, it.quantity - 1))}>-</button>
+              <button className="btn btn-accent" onClick={() => handleRemove(it.id)}>Remove</button>
+            </div>
+          </div>
         ))}
-      </ul>
-      <div style={{ marginTop: 8 }}>
-        <strong>Total: ${cart.total.toFixed(2)}</strong>
       </div>
-      <div style={{ marginTop: 8 }}>
-        <button onClick={handlePlaceOrder} disabled={loading || cart.items.length === 0}>Place Order</button>
+      <div style={{ marginTop: 16, fontSize: '1.1rem', fontWeight: 600 }}>
+        Total: <span style={{ color: 'var(--primary)' }}>${cart.total.toFixed(2)}</span>
+      </div>
+      <div style={{ marginTop: 16 }}>
+        <button className="btn btn-primary scale-in" onClick={handlePlaceOrder} disabled={loading || cart.items.length === 0}>
+          {loading ? 'Placing Order...' : 'Place Order'}
+        </button>
       </div>
     </div>
   );
