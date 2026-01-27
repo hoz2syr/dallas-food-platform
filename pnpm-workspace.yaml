@@ -1,4 +1,4 @@
+# pnpm-workspace.yaml
 packages:
-  - "apps/*"
-  - "services/*"
-  - "packages/*"
+  - 'packages/*'
+  - 'services/*'
