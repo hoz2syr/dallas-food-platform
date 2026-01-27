@@ -9,6 +9,8 @@ import { setupWebSocket } from './websocket-server';
 export async function bootstrap() {
   const cfg = getAppConfig();
   const app = await NestFactory.create(AppModule);
+  // تهيئة EventEmitter (RabbitMQ)
+  import('../events/EventEmitter').then(({ EventEmitter }) => EventEmitter.initialize());
 
   // Swagger/OpenAPI setup
   const config = new DocumentBuilder()
