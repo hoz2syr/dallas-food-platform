@@ -1,9 +1,1 @@
-{
-  "name": "@platform/config",
-  "version": "0.1.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc -p tsconfig.json"
-  }
-}
+{"name":"@platform/config","version":"0.1.0","private":true,"main":"dist/getAppConfig.js","types":"dist/getAppConfig.d.ts","scripts":{"build":"tsc -p tsconfig.json"},"license":"MIT"}
