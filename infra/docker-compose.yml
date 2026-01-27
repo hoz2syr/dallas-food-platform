@@ -59,8 +59,8 @@ services:
   # Backend Services
   menu-service:
     build:
-      context: ..
-      dockerfile: services/menu/Dockerfile
+      context: ./services/menu
+      dockerfile: Dockerfile
     container_name: dallas-menu-service
     ports:
       - "3001:3001"
@@ -83,8 +83,8 @@ services:
 
   order-service:
     build:
-      context: ..
-      dockerfile: services/order/Dockerfile
+      context: ./services/order
+      dockerfile: Dockerfile
     container_name: dallas-order-service
     ports:
       - "3000:3000"
@@ -112,8 +112,8 @@ services:
 
   payments-service:
     build:
-      context: ..
-      dockerfile: services/payments/Dockerfile
+      context: ./services/payments
+      dockerfile: Dockerfile
     container_name: dallas-payments-service
     ports:
       - "3003:3003"
@@ -135,8 +135,8 @@ services:
 
   delivery-service:
     build:
-      context: ..
-      dockerfile: services/delivery/Dockerfile
+      context: ./services/delivery
+      dockerfile: Dockerfile
     container_name: dallas-delivery-service
     ports:
       - "3004:3004"
@@ -173,8 +173,8 @@ services:
   # Frontend Applications
   web:
     build:
-      context: ..
-      dockerfile: apps/web/Dockerfile
+      context: ./apps/web
+      dockerfile: Dockerfile
     container_name: dallas-web
     ports:
       - "3002:3000"
@@ -188,8 +188,8 @@ services:
 
   admin-dashboard:
     build:
-      context: ..
-      dockerfile: apps/admin-dashboard/Dockerfile
+      context: ./apps/admin-dashboard
+      dockerfile: Dockerfile
     container_name: dallas-admin-dashboard
     ports:
       - "3005:3000"
@@ -202,8 +202,8 @@ services:
 
   customer-app:
     build:
-      context: ..
-      dockerfile: apps/customer-app/Dockerfile
+      context: ./apps/customer-app
+      dockerfile: Dockerfile
     container_name: dallas-customer-app
     ports:
       - "3006:3000"
@@ -216,8 +216,8 @@ services:
 
   kitchen-display:
     build:
-      context: ..
-      dockerfile: apps/kitchen-display/Dockerfile
+      context: ./apps/kitchen-display
+      dockerfile: Dockerfile
     container_name: dallas-kitchen-display
     ports:
       - "3007:3000"

@@ -1,0 +1,35 @@
+/* styles/orders.css */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.stat-card {
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  min-width: 120px;
+}
+.stat-number {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #2d3748;
+}
+.stat-label {
+  color: #718096;
+  font-size: 0.9rem;
+}

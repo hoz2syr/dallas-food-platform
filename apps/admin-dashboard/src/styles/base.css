@@ -1,3 +1,34 @@
+/* Toast styles */
+.toast-container {
+  position: fixed;
+  top: 32px;
+  left: 32px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.toast {
+  min-width: 220px;
+  padding: 14px 22px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  color: #fff;
+  opacity: 0.97;
+  animation: toast-in 0.3s;
+}
+.toast-success {
+  background: #38b000;
+}
+.toast-error {
+  background: #e53935;
+}
+@keyframes toast-in {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 0.97; }
+}
 /* أنماط أساسية للوحة الإدارة */
 body {
   font-family: 'Cairo', Arial, sans-serif;
