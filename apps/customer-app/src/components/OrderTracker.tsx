@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Line } from 'rc-progress';
 import { format } from 'date-fns';
 import { ar } from 'date-fns/locale';
-import socketClient from '../lib/socketClient';
+import { socketClient } from '../lib/websocket/AdvancedSocketClient';
 
 interface TimelineEvent {
   id: number;
@@ -47,9 +47,22 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({ orderId }) => {
 
   useEffect(() => {
     fetchOrderData();
-    setupWebSocket();
-    const interval = setInterval(updateTimeRemaining, 60000);
+    let isMounted = true;
+    socketClient.connect(orderId).then(() => {
+      socketClient.on('order:stage:changed', (data: any) => {
+        if (!isMounted) return;
+        setCurrentStage(data.stage);
+        updateProgress(data.stage);
+        fetchOrderData();
+      });
+      socketClient.on('order:status:updated', () => {
+        if (!isMounted) return;
+        fetchOrderData();
+      });
+    });
+    const interval = setInterval(() => updateTimeRemaining(orderData ?? undefined), 60000);
     return () => {
+      isMounted = false;
       clearInterval(interval);
       socketClient.disconnect();
     };
@@ -66,15 +79,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({ orderId }) => {
   };
 
   const setupWebSocket = () => {
-    const socket = socketClient.connect(orderId);
-    socket.on('order:stage:updated', (data: any) => {
-      setCurrentStage(data.stage);
-      updateProgress(data.stage);
-      fetchOrderData();
-    });
-    socket.on('order:status:updated', () => {
-      fetchOrderData();
-    });
+    // تم نقل الربط إلى useEffect مع AdvancedSocketClient
   };
 
   const updateProgress = (stage: string) => {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import socketClient from '../../lib/socketClient';
+import { socketClient } from '../../lib/websocket/AdvancedSocketClient';
 
 interface Order {
   id: string;
@@ -14,12 +14,18 @@ const OrderManagement: React.FC = () => {
 
   useEffect(() => {
     fetchActiveOrders();
+    let isMounted = true;
+    socketClient.connect().then(() => {
+      socketClient.on('order:new', () => {
+        if (!isMounted) return;
+        fetchActiveOrders();
+      });
+    });
     const interval = setInterval(fetchActiveOrders, 30000);
-    const socket = socketClient.connect();
-    socket.on('order:new', fetchActiveOrders);
     return () => {
+      isMounted = false;
       clearInterval(interval);
-      socket.disconnect();
+      socketClient.disconnect();
     };
     // eslint-disable-next-line
   }, [filter]);

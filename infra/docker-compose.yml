@@ -4,6 +4,29 @@ version: "3.8"
 # Defines all services, apps, and infrastructure for the restaurant management platform
 
 services:
+  rabbitmq:
+    image: rabbitmq:3.13-management-alpine
+    container_name: dallas-food-rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS:-admin123}
+      RABBITMQ_DEFAULT_VHOST: /
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - ./infra/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+    networks:
+      - default
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
   # Database Services
   postgres:
     image: postgres:16-alpine
@@ -232,6 +255,7 @@ volumes:
   postgres_data:
   redis_data:
   grafana_data:
+  rabbitmq_data:
 
 networks:
   default:
