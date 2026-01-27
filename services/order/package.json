@@ -14,7 +14,8 @@
     "@nestjs/platform-express": "^10.4.22",
     "pg": "^8.10.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.0.0"
+    "rxjs": "^7.0.0",
+    "@platform/config": "workspace:*"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
