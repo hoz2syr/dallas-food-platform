@@ -1,0 +1,20 @@
+{
+  "name": "notification-service",
+  "version": "1.0.0",
+  "main": "src/index.ts",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "migration:run": "ts-node ./node_modules/typeorm/cli.js migration:run -d src/config/data-source.ts",
+    "migration:generate": "ts-node ./node_modules/typeorm/cli.js migration:generate src/migrations/NotificationMigration -d src/config/data-source.ts"
+  },
+  "dependencies": {
+    "typeorm": "^0.3.17",
+    "pg": "^8.11.1",
+    "amqplib": "^0.10.3",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
+  }
+}
