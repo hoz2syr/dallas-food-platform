@@ -15,7 +15,8 @@
     "pg": "^8.10.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.0.0",
-    "@platform/config": "workspace:*"
+    "@platform/config": "workspace:*",
+    "socket.io": "^4.7.5"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

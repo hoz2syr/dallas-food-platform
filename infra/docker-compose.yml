@@ -65,6 +65,7 @@ services:
     container_name: dallas-order-service
     ports:
       - "3000:3000"
+    # WebSocket يعمل على نفس المنفذ مع HTTP
     restart: unless-stopped
     environment:
       PORT: 3000

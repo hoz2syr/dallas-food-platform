@@ -8,6 +8,7 @@ if (process.env.USE_IN_MEMORY !== 'true') {
   PostgresOrderRepository = require('./repositories/postgres-order.repository').PostgresOrderRepository;
 }
 import { OrderController } from './order.controller';
+import { OrderStatusGateway } from './order-status.gateway';
 import { APP_FILTER } from '@nestjs/core';
 import { OrderErrorFilter } from './order-error.filter';
 
@@ -20,9 +21,10 @@ import { OrderErrorFilter } from './order-error.filter';
       useFactory: (repo: any) => new PlaceOrderUseCase(repo),
       inject: ['OrderRepository']
     },
-    { provide: APP_FILTER, useClass: OrderErrorFilter }
+    { provide: APP_FILTER, useClass: OrderErrorFilter },
+    OrderStatusGateway
   ],
   controllers: [OrderController],
-  exports: [PlaceOrderUseCase]
+  exports: [PlaceOrderUseCase, OrderStatusGateway]
 })
 export class OrderModule {}

@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { getAppConfig } from '@platform/config';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as promClient from 'prom-client';
+import { setupWebSocket } from './websocket-server';
 
 export async function bootstrap() {
   const cfg = getAppConfig();
@@ -33,7 +34,12 @@ export async function bootstrap() {
     });
   }
 
-  await app.listen(cfg.PORT);
+  // Start HTTP server and attach WebSocket
+  const server = await app.listen(cfg.PORT);
+  // Attach socket.io
+  const io = setupWebSocket(server);
+  // Expose io for controllers/gateways
+  app['io'] = io;
   return app;
 }
 

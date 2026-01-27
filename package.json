@@ -4,7 +4,9 @@
   "packageManager": "pnpm@9.15.5",
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "test": "echo 'test placeholder'",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

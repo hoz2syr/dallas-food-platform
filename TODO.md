@@ -14,8 +14,8 @@ Based on the comprehensive architectural plan, this to-do list outlines the deve
 
 ## Phase 2: Backend Services Development
 ### Menu Service
-- [ ] Implement menu CRUD operations
-- [ ] Add inventory management endpoints
+- [x] Implement menu CRUD operations
+- [x] Add inventory management endpoints (added stock field to MenuItem)
 - [ ] Create menu categories and items API
 - [ ] Implement pricing and availability logic
 - [ ] Add menu analytics and reporting
@@ -43,8 +43,14 @@ Based on the comprehensive architectural plan, this to-do list outlines the deve
 
 ## Phase 3: Frontend Interfaces Development
 ### Customer Interfaces (Mobile App & Web)
-- [ ] Build responsive home page with hero section
-- [ ] Implement interactive menu page with categories
+- [x] Build responsive home page with hero section
+- [x] Implement interactive menu page with categories
+- [x] Add visual identity and branding (header, colors, typography)
+- [x] Expand menu with additional food and beverage categories
+- [x] Enhance homepage design with features section and improved UX
+- [x] Translate entire interface to English only
+- [x] Create fast food visual identity (bright colors, energetic design)
+- [x] Implement dark/light mode toggle with theme persistence
 - [ ] Create product details page with customization
 - [ ] Develop shopping cart with quantity management
 - [ ] Build checkout flow with payment integration
