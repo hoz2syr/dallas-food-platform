@@ -29,7 +29,14 @@ export class OrderController {
   async getOrders(req: Request, res: Response) {
     try {
       const { status } = req.query;
-      const where = status ? { status } : {};
+      let statusValue = status;
+      if (Array.isArray(statusValue)) statusValue = statusValue[0];
+      if (typeof statusValue === 'string' && Object.values(OrderStatus).includes(statusValue as OrderStatus)) {
+        statusValue = statusValue as OrderStatus;
+      } else {
+        statusValue = undefined;
+      }
+      const where = statusValue ? { status: statusValue as OrderStatus } : {};
       const orders = await this.orderRepository.find({
         where,
         order: { createdAt: 'DESC' }
@@ -44,7 +51,7 @@ export class OrderController {
     try {
       const { id } = req.params;
       const { status } = req.body;
-      const order = await this.orderRepository.findOneBy({ id });
+      const order = await this.orderRepository.findOneBy({ id: Array.isArray(id) ? id[0] : id });
       if (!order) {
         return res.status(404).json({ success: false, error: 'Order not found' });
       }

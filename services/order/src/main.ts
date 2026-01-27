@@ -1,16 +1,16 @@
+
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { getAppConfig } from '@platform/config';
+import { getAppConfig } from '../../../packages/config/src/getAppConfig';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as promClient from 'prom-client';
 import { setupWebSocket } from './websocket-server';
 
-export async function bootstrap() {
+// تعريف الدالة وصدّرها مباشرة
+export const bootstrap = async () => {
   const cfg = getAppConfig();
   const app = await NestFactory.create(AppModule);
-  // تهيئة EventEmitter (RabbitMQ)
-  import('../events/EventEmitter').then(({ EventEmitter }) => EventEmitter.initialize());
 
   // Swagger/OpenAPI setup
   const config = new DocumentBuilder()
@@ -26,23 +26,36 @@ export async function bootstrap() {
   // Prometheus metrics
   promClient.collectDefaultMetrics();
   const httpAdapter = app.getHttpAdapter();
-  const server = httpAdapter.getInstance();
+  let server = httpAdapter.getInstance();
+  
   if (server && typeof server.get === 'function') {
-    server.get('/health', (_req, res) => res.json({ status: 'ok' }));
-    server.get('/ready', (_req, res) => res.json({ ready: true }));
-    server.get('/metrics', async (_req, res) => {
+    server.get('/health', (_req: any, res: any) => res.json({ status: 'ok' }));
+    server.get('/ready', (_req: any, res: any) => res.json({ ready: true }));
+    server.get('/metrics', async (_req: any, res: any) => {
       res.set('Content-Type', promClient.register.contentType);
       res.send(await promClient.register.metrics());
     });
   }
 
-  // Start HTTP server and attach WebSocket
-  const server = await app.listen(cfg.PORT);
+  server = await app.listen(cfg.PORT);
+  
   // Attach socket.io
   const io = setupWebSocket(server);
-  // Expose io for controllers/gateways
-  app['io'] = io;
+  // إذا كنت بحاجة للوصول إلى io في أماكن أخرى، قم بتخزينه في متغير خارجي أو خدمة مخصصة بدلاً من التعيين على app مباشرة
+  // مثال: export { io } أو استخدم Singleton
+  
+  console.log(`🚀 Order service running on port ${cfg.PORT}`);
   return app;
+};
+
+// تصدير كـ default أيضًا
+export default bootstrap;
+
+// استدعاء تلقائي فقط إذا شُغّل الملف مباشرة
+if (require.main === module) {
+  bootstrap().catch(error => {
+    console.error('Failed to bootstrap:', error);
+    process.exit(1);
+  });
 }
 
-bootstrap();

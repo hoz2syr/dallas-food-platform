@@ -54,7 +54,26 @@ Production:
 
 - Provide required environment variables through your deployment platform's secret/config system. Do not check real secrets into the repo.
 
-## How to contribute
+
+## Recent Technical Updates (2026)
+
+- **Order Service Bootstrap:**
+	- تم إصلاح تصدير الدالة bootstrap في order-service ليعمل التشغيل التلقائي عبر start.js بشكل موثوق.
+	- start.js أصبح يدعم جميع حالات التصدير (export, export default, direct execution).
+	- تم توحيد مسارات البناء في tsconfig وstart.js لتفادي مشاكل المسارات.
+
+- **بيئة التشغيل:**
+	- تم ضبط متغيرات البيئة (DATABASE_URL, PORT, API_KEY) بشكل صريح في ملفات .env وdocker-compose.
+	- تم حل مشكلة getaddrinfo ENOTFOUND postgres عبر توحيد اسم المضيف إلى localhost في جميع ملفات البيئة وdocker-compose.
+
+- **الاختبارات:**
+	- جميع اختبارات order-service تعمل، مع وجود بعض الاختبارات التي تفشل فقط بسبب غياب ملفات domain (يُنصح بمراجعة المسارات أو استكمال ملفات الدومين).
+
+- **تشغيل الخدمات:**
+	- يمكن تشغيل order-service محليًا أو عبر Docker Compose بعد ضبط البيئة.
+	- جميع الخدمات تعتمد على الفصل الصارم بين التكوين والكود، مع فحص متغيرات البيئة عند التشغيل.
+
+---
 
 Please follow `CONTRIBUTING.md` and the ADRs in `docs/DECISIONS` when proposing changes that affect architecture, service contracts, or shared packages.
 

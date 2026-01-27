@@ -21,7 +21,7 @@ export class HealthController {
 
     constructor() {
         setInterval(() => {
-            this.wsConnectedClients = global.wsServer?.engine?.clientsCount || 0;
+            // this.wsConnectedClients = global.wsServer?.engine?.clientsCount || 0;
         }, 5000);
     }
 

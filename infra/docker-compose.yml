@@ -94,7 +94,7 @@ services:
       PORT: 3000
       API_KEY: test-key
       USE_IN_MEMORY: 'false'
-      DATABASE_URL: postgres://dallas:dallas@postgres:5432/dallas
+      DATABASE_URL: postgres://dallas:dallas@localhost:5432/dallas
       REDIS_URL: redis://redis:6379
       MENU_SERVICE_URL: http://menu-service:3001
     depends_on:

@@ -15,8 +15,8 @@ export class CreateOrderTrackingTables1748601600000 implements MigrationInterfac
         await queryRunner.createTable(new Table({
             name: "order_stages",
             columns: [
-                { name: "id", type: "SERIAL", isPrimary: true, isGenerated: true, generationStrategy: "increment" },
-                { name: "order_id", type: "INTEGER", isNullable: false },
+                { name: "id", type: "SERIAL", isPrimary: true },
+                { name: "order_id", type: "uuid", isNullable: false },
                 { name: "stage_name", type: "VARCHAR", length: "50", isNullable: false },
                 { name: "status", type: "VARCHAR", length: "20", default: "'pending'" },
                 { name: "started_at", type: "TIMESTAMP", isNullable: true },
@@ -33,8 +33,8 @@ export class CreateOrderTrackingTables1748601600000 implements MigrationInterfac
         await queryRunner.createTable(new Table({
             name: "order_timeline",
             columns: [
-                { name: "id", type: "SERIAL", isPrimary: true, isGenerated: true, generationStrategy: "increment" },
-                { name: "order_id", type: "INTEGER", isNullable: false },
+                { name: "id", type: "SERIAL", isPrimary: true },
+                { name: "order_id", type: "uuid", isNullable: false },
                 { name: "event_type", type: "VARCHAR", length: "50", isNullable: false },
                 { name: "event_data", type: "JSONB", isNullable: false },
                 { name: "created_by", type: "INTEGER", isNullable: true },

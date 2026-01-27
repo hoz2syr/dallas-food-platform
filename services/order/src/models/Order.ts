@@ -13,29 +13,29 @@ export enum OrderStatus {
 @Entity('orders')
 export class Order {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  id!: string;
 
   @Column()
-  customerId: string;
+  customerId!: string;
 
   @Column()
-  customerName: string;
+  customerName!: string;
 
   @Column('text')
-  deliveryAddress: string;
+  deliveryAddress!: string;
 
   @Column({ type: 'decimal', precision: 10, scale: 2 })
-  totalAmount: number;
+  totalAmount!: number;
 
   @Column({
     type: 'enum',
     enum: OrderStatus,
     default: OrderStatus.PENDING
   })
-  status: OrderStatus;
+  status!: OrderStatus;
 
   @Column({ type: 'jsonb', nullable: true })
-  items: Array<{
+  items!: Array<{
     menuItemId: string;
     name: string;
     quantity: number;
@@ -43,8 +43,8 @@ export class Order {
   }>;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
 }

@@ -1,0 +1,7 @@
+{
+	"name": "payments-service",
+	"version": "0.0.1",
+	"description": "Payments microservice",
+	"main": "index.js",
+	"license": "MIT"
+}
