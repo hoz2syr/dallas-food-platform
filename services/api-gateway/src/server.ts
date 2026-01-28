@@ -8,6 +8,7 @@ import { rateLimiter } from './middleware/rateLimit.middleware';
 import { correlationMiddleware, requestLogger } from './middleware/logging.middleware';
 import { errorMiddleware } from './middleware/error.middleware';
 import routes from './routes';
+import { metricsMiddleware, metricsEndpoint } from './middleware/metrics.middleware';
 
 dotenv.config();
 
@@ -17,13 +18,19 @@ export function startServer() {
   app.use(helmet());
   app.use(compression());
   app.use(express.json());
+
   app.use(correlationMiddleware as express.RequestHandler);
   app.use(requestLogger as express.RequestHandler);
   app.use(corsMiddleware);
   app.use(rateLimiter);
+  app.use(metricsMiddleware);
+
 
   // Health check
   app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+  // Prometheus metrics endpoint
+  app.get('/metrics', metricsEndpoint);
 
   // Mount all API routes (auth, proxy)
   app.use(routes);

@@ -1,5 +1,5 @@
 
-import { describe, it, expect, beforeEach } from 'vitest';
+// Converted from Vitest to Jest: use Jest globals
 import { PlaceOrderUseCase } from '../src/modules/order/application/use-cases/place-order.use-case';
 import { OrderRepository } from '../src/modules/domain/repositories/order.repository';
 import { PlaceOrderCommand } from '../src/modules/order/application/commands/place-order.command';

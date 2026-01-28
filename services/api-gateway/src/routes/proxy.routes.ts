@@ -12,7 +12,7 @@ routes.forEach(route => {
     (router as any)[method.toLowerCase()](route.path, 
       route.auth ? authMiddleware(route.permissions) : (req: Request, res: Response, next: NextFunction) => next(),
       createProxyMiddleware({
-        target: route.target,
+        target: route.target || 'http://localhost:3001',
         changeOrigin: true,
         pathRewrite: (path, req) => {
           // Remove /api/v1 prefix for backend

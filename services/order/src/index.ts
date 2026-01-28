@@ -1,6 +1,6 @@
-// Entry point for the order service
-import { getAppConfig } from '../../../packages/config/src/getAppConfig';
 
-const appConfig = getAppConfig();
+import bootstrap from './main';
 
-console.log('Order service started with config:', appConfig);
+if (require.main === module) {
+	bootstrap();
+}

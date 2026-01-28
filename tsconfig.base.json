@@ -11,6 +11,12 @@
     "forceConsistentCasingInFileNames": true,
 
     "esModuleInterop": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "baseUrl": "./services/order/src",
+    "paths": {
+      "@domain/*": ["modules/order/domain/*"],
+      "@application/*": ["modules/order/application/*"],
+      "@infrastructure/*": ["modules/order/infrastructure/*"]
+    }
   }
 }

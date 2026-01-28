@@ -83,6 +83,48 @@ CORS_ORIGIN=http://localhost:3000
 
 ---
 
+
+## 🛡️ Middleware Overview
+
+### Rate Limiting
+Requests are rate-limited using Redis and `express-rate-limit`. Settings are controlled via environment variables:
+
+```
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
+REDIS_URL=redis://localhost:6379
+```
+You can customize the window and max requests per IP. See `src/middleware/rateLimit.middleware.ts` for implementation.
+
+### CORS
+CORS is enabled and configured via:
+```
+CORS_ORIGIN=http://localhost:3000
+```
+See `src/middleware/cors.middleware.ts` for details.
+
+### Input Validation
+All sensitive endpoints (e.g., auth) use input validation with Joi schemas. Example:
+
+```typescript
+import Joi from 'joi';
+import { validate } from '../utils/validators';
+
+const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().required()
+});
+
+router.post('/login', (req, res) => {
+  const { email, password } = validate(loginSchema, req.body);
+  // ...
+});
+```
+See `src/utils/validators.ts` and `src/routes/auth.routes.ts` for usage.
+
+
+---
+
 ## 🧑‍💻 Usage Examples
 
 ### Health Check

@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+import jwt, { SignOptions } from 'jsonwebtoken';
 import { config } from '../config';
 import { validate } from '../utils/validators';
 import Joi from 'joi';
@@ -32,8 +32,16 @@ router.post('/login', (req: Request, res: Response) => {
       roles: mockUser.roles,
       permissions: mockUser.permissions
     };
-    const accessToken = jwt.sign(payload, config.jwt.secret, { expiresIn: config.jwt.expiresIn });
-    const refreshToken = jwt.sign(payload, config.jwt.refreshSecret, { expiresIn: config.jwt.refreshExpiresIn });
+    const accessToken = jwt.sign(
+      payload,
+      config.jwt.secret as string,
+      { expiresIn: config.jwt.expiresIn } as SignOptions
+    );
+    const refreshToken = jwt.sign(
+      payload,
+      config.jwt.refreshSecret as string,
+      { expiresIn: config.jwt.refreshExpiresIn } as SignOptions
+    );
     res.json({ accessToken, refreshToken, expiresIn: config.jwt.expiresIn });
   } catch (err: any) {
     res.status(400).json({ message: err.message });

@@ -1,3 +1,4 @@
+/// <reference path="../types/express.d.ts" />
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
@@ -11,7 +12,7 @@ export function authMiddleware(requiredPermissions?: string[]) {
     const token = authHeader.split(' ')[1];
     try {
       const decoded = jwt.verify(token, config.jwt.secret) as any;
-      req.user = decoded;
+      (req as any).user = decoded;
       if (requiredPermissions && requiredPermissions.length > 0) {
         const userPerms = decoded.permissions || [];
         const hasPerm = requiredPermissions.every(p => userPerms.includes(p));

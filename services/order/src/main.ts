@@ -38,17 +38,15 @@ export const bootstrap = async () => {
   }
 
   server = await app.listen(cfg.PORT);
-  
   // Attach socket.io
   const io = setupWebSocket(server);
   // إذا كنت بحاجة للوصول إلى io في أماكن أخرى، قم بتخزينه في متغير خارجي أو خدمة مخصصة بدلاً من التعيين على app مباشرة
   // مثال: export { io } أو استخدم Singleton
-  
+
   console.log(`🚀 Order service running on port ${cfg.PORT}`);
   return app;
 };
 
-// تصدير كـ default أيضًا
 export default bootstrap;
 
 // استدعاء تلقائي فقط إذا شُغّل الملف مباشرة

@@ -1,5 +1,5 @@
 
-import { describe, it, expect } from 'vitest';
+// Converted from Vitest to Jest: use Jest globals
 import { Order } from '../src/modules/domain/entities/order.entity';
 import { OrderStatus } from '../src/modules/domain/value-objects/order-status';
 import { EmptyOrderItemsError, InvalidOrderStateError } from '../src/modules/domain/errors/order-domain.error';
