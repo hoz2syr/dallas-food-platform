@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "next": "^14.0.0",
@@ -14,8 +15,11 @@
     "react-dom": "^18.0.0"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
+    "@types/jest": "^29.5.3",
+    "@types/node": "^18.0.0",
     "@types/react": "^18.0.0",
-    "@types/node": "^18.0.0"
+    "jest-environment-jsdom": "^30.2.0",
+    "ts-jest": "^29.4.6",
+    "typescript": "^5.0.0"
   }
 }

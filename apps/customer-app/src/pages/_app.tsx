@@ -1,7 +1,11 @@
+
 import '../styles/base.css';
 import type { AppProps } from 'next/app';
 import Link from 'next/link';
 import ThemeToggle from '../components/ThemeToggle';
+
+import { CartProvider } from '../lib/context/CartContext';
+import { AuthProvider } from '../lib/context/AuthContext';
 
 function Header() {
   return (
@@ -23,13 +27,17 @@ function Header() {
   );
 }
 
-export default function App({ Component, pageProps }: AppProps) {
+function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <>
-      <Header />
-      <main>
-        <Component {...pageProps} />
-      </main>
-    </>
+    <AuthProvider>
+      <CartProvider>
+        <Header />
+        <main>
+          <Component {...pageProps} />
+        </main>
+      </CartProvider>
+    </AuthProvider>
   );
 }
+
+export default MyApp;
