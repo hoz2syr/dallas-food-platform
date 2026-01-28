@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 import { logger } from '../utils/logger';
-import { RequestWithUser } from '../types';
+import { RequestWithUser } from '../types/index';
 
 /**
  * Middleware to add correlation ID to requests

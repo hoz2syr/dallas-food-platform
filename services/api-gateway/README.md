@@ -154,3 +154,19 @@ For issues, open a GitHub issue or contact the team.
 ## License
 
 MIT
+
+---
+
+## Recent Technical Updates (2026)
+
+- **TypeScript Middleware Fixes:**
+  - All custom middlewares (logging, correlation, rate limiting) now use explicit type signatures compatible with Express and TypeScript, preventing runtime and compile errors.
+  - `RequestWithUser` interface now extends Express `Request` for type safety.
+- **Dependency Updates:**
+  - Upgraded `supertest`, `superagent`, and added `uuid` with its type definitions to resolve deprecation and missing module errors.
+  - All dependencies audited and updated to address security vulnerabilities where possible.
+- **Security & Compatibility:**
+  - Rate limiting middleware now uses a type-safe Redis command signature for compatibility with `ioredis` and `rate-limit-redis`.
+  - All environment variables and configuration files reviewed for consistency and security best practices.
+
+Please refer to this section for any breaking changes or migration notes related to the 2026 update cycle.
