@@ -9,5 +9,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage"
+  },
+  "devDependencies": {
+    "supertest": "^6.3.3",
+    "@nestjs/testing": "^10.0.0",
+    "@nestjs/common": "^10.0.0",
+    "@types/supertest": "^2.0.12"
   }
 }

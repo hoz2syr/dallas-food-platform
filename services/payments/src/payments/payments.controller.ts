@@ -1,4 +1,5 @@
 import { Controller, Post, Body, Get, Param, Query } from '@nestjs/common';
+import { Public } from '../../../shared/auth/public.decorator';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { PaymentsService } from './payments.service';
 import { ProcessPaymentDto } from './dto/process-payment.dto';
@@ -9,6 +10,8 @@ import { RefundPaymentDto } from './dto/refund-payment.dto';
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
 
+
+  @Public()
   @Post('process')
   @ApiOperation({ summary: 'Process a payment' })
   @ApiResponse({ status: 201, description: 'Payment processed successfully' })
@@ -17,6 +20,8 @@ export class PaymentsController {
     return this.paymentsService.processPayment(processPaymentDto);
   }
 
+
+  @Public()
   @Post('refund')
   @ApiOperation({ summary: 'Refund a payment' })
   @ApiResponse({ status: 200, description: 'Payment refunded successfully' })

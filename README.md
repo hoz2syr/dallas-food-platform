@@ -87,6 +87,22 @@ Tip: add a reference table (or file in `docs/`) that lists required env vars per
 **Production:**
 - Use your deployment platform's secret/config system. Never commit real secrets.
 
+## Authentication & Security
+
+All backend APIs are now protected by JWT authentication. You must obtain a valid JWT token from the Auth Service (`/api/auth/login` or `/api/auth/signup`) and include it in the `Authorization: Bearer <token>` header for all requests to protected endpoints.
+
+- **Auth Service**: Provides `/signup`, `/login`, and `/me` endpoints for user management and token issuance.
+- **Public endpoints**: Some endpoints (e.g., `/payments/process`, `/payments/refund`) may be marked as public for demo/testing, but all other APIs require authentication.
+- **How to use:**
+  1. Register or login via the Auth Service to get a JWT.
+  2. Add the token to your API requests:
+     ```http
+     Authorization: Bearer <your-jwt-token>
+     ```
+  3. If you receive a 401 error, your token is missing, expired, or invalid.
+
+See each service's README for more details on authentication requirements and public endpoints.
+
 ## Contribution & Development
 
 - Follow ADRs in `docs/DECISIONS` for architecture and technology guidance

@@ -1,14 +1,17 @@
+
 import { Module } from '@nestjs/common';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
-import { ApiKeyGuard } from '../../shared/auth/api-key.guard';
-import { LoggingInterceptor } from '../../shared/logging/logging.interceptor';
+import { APP_GUARD } from '@nestjs/core';
+import { Reflector } from '@nestjs/core';
+import { JwtAuthGuard } from '../../shared/auth/jwt-auth.guard';
+import { JwtStrategy } from '../../shared/auth/jwt.strategy';
 
 @Module({
   imports: [],
   controllers: [],
   providers: [
-    { provide: APP_GUARD, useClass: ApiKeyGuard },
-    { provide: APP_INTERCEPTOR, useClass: LoggingInterceptor }
+    JwtStrategy,
+    Reflector,
+    { provide: APP_GUARD, useClass: JwtAuthGuard },
   ]
 })
 export class AppModule {}

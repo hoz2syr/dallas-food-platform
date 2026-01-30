@@ -56,6 +56,16 @@ docker build -t order-service .
 docker run --env-file .env order-service
 ```
 
+## Authentication
+
+- All endpoints require a valid JWT in the `Authorization` header.
+- Obtain a JWT from the Auth Service (`/api/auth/login` or `/api/auth/signup`).
+- Example:
+  ```http
+  Authorization: Bearer <your-jwt-token>
+  ```
+- If you receive a 401 error, your token is missing, expired, or invalid.
+
 ## Troubleshooting
 - Ensure all environment variables are set.
 - If you encounter build issues, clean the cache or delete node_modules and reinstall.

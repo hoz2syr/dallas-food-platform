@@ -1,7 +1,7 @@
 # Menu Service (services/menu)
 
 ## Purpose
-إدارة القوائم وأصناف الطعام للمنصة. توفر الخدمة واجهات API لإنشاء وتحديث واستعراض القوائم والأصناف.
+ إدارة القوائم وأصناف الطعام للمنصة. توفر الخدمة واجهات API لإنشاء وتحديث واستعراض القوائم والأصناف.
 
 ## Structure
 - `src/` — الكود المصدري (طبقات domain, application, infrastructure)
@@ -56,6 +56,16 @@ Or using Docker:
 docker build -t menu-service .
 docker run --env-file .env menu-service
 ```
+
+## Authentication
+
+- All endpoints require a valid JWT in the `Authorization` header.
+- Obtain a JWT from the Auth Service (`/api/auth/login` or `/api/auth/signup`).
+- Example:
+  ```http
+  Authorization: Bearer <your-jwt-token>
+  ```
+- If you receive a 401 error, your token is missing, expired, or invalid.
 
 ## Troubleshooting
 - Ensure all environment variables are set.

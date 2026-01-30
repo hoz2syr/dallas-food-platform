@@ -57,6 +57,16 @@ docker build -t payments-service .
 docker run --env-file .env payments-service
 ```
 
+## Authentication
+
+- Most endpoints require a valid JWT in the `Authorization` header.
+- Obtain a JWT from the Auth Service (`/api/auth/login` or `/api/auth/signup`).
+- Example:
+  ```http
+  Authorization: Bearer <your-jwt-token>
+  ```
+- Some endpoints (e.g., `/payments/process`, `/payments/refund`) may be public for demo/testing.
+
 ## Troubleshooting
 - Ensure all environment variables are set.
 - If you encounter build issues, clean the cache or delete node_modules and reinstall.
