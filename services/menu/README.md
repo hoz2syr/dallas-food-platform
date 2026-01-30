@@ -34,3 +34,29 @@ POST /menus
 - أضف دعم الترجمة أو التصنيفات للأصناف.
 - أضف اختبارات وحدات وتكامل.
 - حسّن التوثيق الداخلي للكود.
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the required values:
+
+- API_KEY
+- PORT
+
+## Build & Run
+
+```bash
+pnpm install
+pnpm run build
+pnpm run start
+```
+
+Or using Docker:
+
+```bash
+docker build -t menu-service .
+docker run --env-file .env menu-service
+```
+
+## Troubleshooting
+- Ensure all environment variables are set.
+- If you encounter build issues, clean the cache or delete node_modules and reinstall.

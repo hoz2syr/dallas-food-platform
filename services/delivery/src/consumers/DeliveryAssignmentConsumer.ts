@@ -16,9 +16,9 @@ export class DeliveryAssignmentConsumer {
             const rabbitmqUrl = process.env.RABBITMQ_URL || 'amqp://order_service:order_service_pass@rabbitmq:5672';
             this.connection = await amqp.connect(rabbitmqUrl);
             this.channel = await this.connection.createChannel();
-            // التأكد من وجود الطابور (يجب أن يكون موجوداً من تعريفات infra)
+            // Ensure the queue exists (should be defined in infra)
             await this.channel.assertQueue(this.queueName, { durable: true });
-            // الربط بالموضوع المحدد
+            // Bind to the specified topic
             await this.channel.bindQueue(this.queueName, 'order.events', this.routingKey);
             console.log(`✅ [Delivery] Consumer started, listening on queue: ${this.queueName}, routing key: ${this.routingKey}`);
             this.channel.consume(this.queueName, async (msg) => {
@@ -26,13 +26,13 @@ export class DeliveryAssignmentConsumer {
                     try {
                         const event = JSON.parse(msg.content.toString()) as DeliveryAssignmentEvent;
                         console.log(`📦 [Delivery] Received assignment event for order ${event.orderId}`);
-                        // معالجة الحدث
+                        // Process the event
                         await this.processDeliveryAssignment(event);
-                        // تأكيد استلام الرسالة
+                        // Acknowledge message receipt
                         this.channel?.ack(msg);
                     } catch (error) {
                         console.error('❌ [Delivery] Error processing message:', error);
-                        // رفض الرسالة دون إعادة إرسال (يمكن تحسينها لاحقاً)
+                        // Reject the message without requeue (can be improved later)
                         this.channel?.nack(msg, false, false);
                     }
                 }
@@ -45,17 +45,17 @@ export class DeliveryAssignmentConsumer {
 
     private async processDeliveryAssignment(event: DeliveryAssignmentEvent): Promise<void> {
         const deliveryRepo = AppDataSource.getRepository(DeliveryTrip);
-        // 1. تحويل العنوان إلى إحداثيات (Geocoding)
+        // 1. Convert address to coordinates (Geocoding)
         const destinationCoords = await geocodeAddress(event.deliveryAddress);
         if (!destinationCoords) {
             throw new Error(`Failed to geocode address: ${event.deliveryAddress}`);
         }
-        // 2. حساب المسار والوقت المقدر
+        // 2. Calculate route and estimated time
         const routeInfo = await calculateRoute(
             event.restaurantLocation,
             destinationCoords
         );
-        // 3. إنشاء سجل رحلة توصيل
+        // 3. Create delivery trip record
         const deliveryTrip = deliveryRepo.create({
             orderId: event.orderId,
             deliveryAddress: event.deliveryAddress,
@@ -64,11 +64,11 @@ export class DeliveryAssignmentConsumer {
             destinationLng: destinationCoords.lng,
             pickupLat: event.restaurantLocation.lat,
             pickupLng: event.restaurantLocation.lng,
-            estimatedDurationMinutes: Math.ceil(routeInfo.duration / 60) // تحويل إلى دقائق
+            estimatedDurationMinutes: Math.ceil(routeInfo.duration / 60) // Convert to minutes
         });
         await deliveryRepo.save(deliveryTrip);
         console.log(`✅ [Delivery] Created delivery trip #${deliveryTrip.id} for order ${event.orderId}`);
-        // TODO: في المستقبل، يمكن إضافة منطق تعيين سائق تلقائياً هنا
+        // TODO: In the future, add automatic driver assignment logic here
         // this.assignDriver(deliveryTrip.id);
     }
 

@@ -13,8 +13,8 @@ services:
 
   order:
     build:
-      context: ./services/order
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: services/order/Dockerfile
     environment:
       - DATABASE_URL=postgres://dev:dev@postgres:5432/dallas_dev
       - PORT=3001

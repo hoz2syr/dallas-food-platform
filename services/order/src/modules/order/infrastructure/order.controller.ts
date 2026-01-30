@@ -47,9 +47,9 @@ export class OrderController {
     @Body('status') status: string,
     @Req() req: any
   ) {
-    // هنا يجب تحديث حالة الطلب في قاعدة البيانات (منطقيًا)
-    // ثم إرسال التحديث عبر WebSocket
-    // مثال توضيحي فقط:
+    // Here, the order status should be updated in the database (logical step)
+    // Then, send the update via WebSocket
+    // Example only:
     // await OrderService.updateStatus(orderId, status);
     this.orderStatusGateway.emitOrderStatusUpdate(orderId, status);
     return { success: true, orderId, status };

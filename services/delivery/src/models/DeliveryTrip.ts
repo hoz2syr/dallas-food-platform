@@ -7,7 +7,7 @@ export class DeliveryTrip {
     id: number;
 
     @Column({ type: 'integer', nullable: false })
-    orderId: number; // المعرّف المرتبط بالطلب في order service
+    orderId: number; // The order ID associated with the order service
 
     @Column({ type: 'varchar', length: 100 })
     deliveryAddress: string;
@@ -20,7 +20,7 @@ export class DeliveryTrip {
     status: DeliveryStatus; // PENDING, ASSIGNED, PICKED_UP, ON_ROUTE, DELIVERED, FAILED
 
     @Column({ type: 'integer', nullable: true })
-    assignedDriverId?: number; // يمكن ربطه بنموذج Driver لاحقاً
+    assignedDriverId?: number; // Can be linked to a Driver model in the future
 
     @Column({ type: 'varchar', length: 50, nullable: true })
     assignedDriverName?: string;
@@ -38,7 +38,7 @@ export class DeliveryTrip {
     destinationLng?: number;
 
     @Column({ type: 'integer', nullable: true })
-    estimatedDurationMinutes?: number; // تقدير وقت الرحلة
+    estimatedDurationMinutes?: number; // Estimated trip duration
 
     @Column({ type: 'timestamp', nullable: true })
     pickedUpAt?: Date;

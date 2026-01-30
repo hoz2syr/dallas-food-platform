@@ -1,80 +1,136 @@
-# dallas-food-platform
+---
+# Dallas Food Platform
 
-Vision: Build a resilient, extensible food ordering platform for Dallas.
+**Vision:** Build a resilient, extensible, and modern food ordering platform for Dallas and beyond.
 
-- Core hybrid architecture that balances central governance and service autonomy.
-- Enable fast iteration for services (menu, orders, delivery, payments).
-- Prioritize observability, security, and developer experience.
+## Key Principles
 
-## Repository Structure Overview
+- Hybrid core + microservices architecture for scalability and autonomy
+- Clean Architecture: clear separation of domain, application, and infrastructure layers
+- API-first, event-ready, and cloud-native by design
+- Developer experience, observability, and security are first-class concerns
 
-- `services/`: Independent service folders, each owning domain logic (e.g., `menu`, `order`, `delivery`, `payments`). Services are small, independently deployable, and follow the platform ADRs.
-- `packages/`: Shared packages used by multiple services (utilities, types, shared libraries). Start small and extract common code here to avoid duplication.
-- `infra/`, `scripts/`, `docs/`: Infrastructure definitions, operational scripts, and architecture/ADR documentation respectively.
+## Repository Structure
 
-Follow ADRs in `docs/DECISIONS` for architecture and technology guidance.
+```
+```
 
-## System Overview (Arabic)
+```
+services/        # Independent backend services (order, menu, delivery, payments, etc.)
+packages/        # Shared libraries, types, and utilities
+apps/            # Frontend and dashboard applications (web, admin-dashboard, customer-app, kitchen-display)
+infra/           # Infrastructure as code, Docker, Kubernetes, CI/CD
+   └── scripts/   # Automation and operational scripts (moved from root scripts/)
+docs/            # Architecture, ADRs, API contracts, and system documentation
+```
 
-A new Arabic system overview document was added: `docs/system_overview_ar.md` which contains the high-level conceptual definition and primary personas (العميلية، التشغيلية، الإدارية، اللوجستية، الداعمة).
+Other files moved for clarity:
+- response.txt, PROJECT-REVIEW-REPORT.md, TODO.md → docs/
 
-## Architecture Decisions
+Each service follows a standard layout:
 
-See `docs/DECISIONS/0001-architecture.md` for the canonical architecture decision record that describes the hybrid microservices approach, persona requirements, recommended service boundaries, configuration and observability guidance.
-
-## Services
-
-This repository uses a services-first monorepo layout. Each service should include:
-
-- `src/` — implementation
-- `src/config/` — configuration helpers that validate env vars
-- `src/routes/` or `src/controllers/` — HTTP handlers
+- `src/` — implementation (domain, application, infrastructure)
 - `tests/` — unit and integration tests
-- `Dockerfile` — container image build
-- `README.md` — per-service documentation and required env variables
+- `db/` — migrations and schema (if needed)
+- `Dockerfile` — container build
+- `README.md` — service documentation
 
-New skeleton README files were added for the primary services: order, menu, delivery, payments under `services/`.
+## Architecture Overview
+
+This platform uses a "Hybrid Core + Services" model:
+
+- **Core**: Shared authentication, observability, and platform-wide policies
+- **Services**: Small, focused, independently deployable microservices (order, menu, delivery, payments, etc.)
+- **Communication**: REST APIs for synchronous flows, events for async integration
+- **Frontend**: Next.js (App Router), modern UI, API-first
+
+See `docs/ARCHITECTURE_OVERVIEW.md` and `docs/REFERENCE-ARCHITECTURE.md` for details.
+
+## Getting Started
+
+1. Copy `.env.example` to `.env` and configure environment variables
+
+Quickstart (Windows)
+
+1. Enable Corepack and prepare the pinned pnpm version:
+
+```powershell
+corepack enable
+corepack prepare pnpm@9.15.5 --activate
+```
+
+2. Install workspace dependencies:
+
+```powershell
+pnpm install -w
+```
+
+3. Start services locally with Docker Compose (unified example):
+
+```powershell
+docker compose -f infra/docker-compose.yml up --build
+```
+
+4. Access frontend apps at the configured ports
 
 ## Configuration & Environments
 
-This repository expects services to read configuration explicitly from environment variables. Each service should provide a `getAppConfig()` helper that validates required environment variables and fails-fast on startup if required values are missing.
+All services read configuration from environment variables. Each service must validate required variables at startup and fail fast if missing.
 
-Required environment variables (per service):
+**Required variables (per service):**
+- `PORT` — HTTP server port
+- `DATABASE_URL` — Postgres connection string
+- `API_KEY` — API key for authentication (if applicable)
 
-- `PORT` - numeric port the HTTP server listens on
-- `DATABASE_URL` - database connection string (Postgres)
-- `API_KEY` - API key used to authenticate incoming requests (when applicable)
+Tip: add a reference table (or file in `docs/`) that lists required env vars per service (Postgres, Redis, RabbitMQ, Stripe, Google Maps, etc.) with example values.
 
-Local development:
+**Production:**
+- Use your deployment platform's secret/config system. Never commit real secrets.
 
-1. Copy `.env.example` to `.env` and edit values as needed.
-2. Start services using your preferred approach (local, Docker Compose, or workspace scripts).
+## Contribution & Development
 
-Production:
+- Follow ADRs in `docs/DECISIONS` for architecture and technology guidance
+- See `CONTRIBUTING.md` for contribution process
+- Write clear code comments and keep documentation up to date (English only)
 
-- Provide required environment variables through your deployment platform's secret/config system. Do not check real secrets into the repo.
+## Documentation
 
+- `docs/ARCHITECTURE_OVERVIEW.md` — high-level architecture
+- `docs/REFERENCE-ARCHITECTURE.md` — Clean Architecture and service layering
+- `docs/API-CONTRACTS.md` — API contracts and examples
+- `docs/SERVICE-BLUEPRINT.md` — service structure and best practices
 
-## Recent Technical Updates (2026)
+## License
 
-- **Order Service Bootstrap:**
-	- تم إصلاح تصدير الدالة bootstrap في order-service ليعمل التشغيل التلقائي عبر start.js بشكل موثوق.
-	- start.js أصبح يدعم جميع حالات التصدير (export, export default, direct execution).
-	- تم توحيد مسارات البناء في tsconfig وstart.js لتفادي مشاكل المسارات.
-
-- **بيئة التشغيل:**
-	- تم ضبط متغيرات البيئة (DATABASE_URL, PORT, API_KEY) بشكل صريح في ملفات .env وdocker-compose.
-	- تم حل مشكلة getaddrinfo ENOTFOUND postgres عبر توحيد اسم المضيف إلى localhost في جميع ملفات البيئة وdocker-compose.
-
-- **الاختبارات:**
-	- جميع اختبارات order-service تعمل، مع وجود بعض الاختبارات التي تفشل فقط بسبب غياب ملفات domain (يُنصح بمراجعة المسارات أو استكمال ملفات الدومين).
-
-- **تشغيل الخدمات:**
-	- يمكن تشغيل order-service محليًا أو عبر Docker Compose بعد ضبط البيئة.
-	- جميع الخدمات تعتمد على الفصل الصارم بين التكوين والكود، مع فحص متغيرات البيئة عند التشغيل.
-
+MIT License — see LICENSE file
 ---
+   ```bash
+   cp .env.example .env
+   # ثم عدّل القيم حسب الحاجة
+   ```
+1. (Windows) تهيئة Corepack وpnpm:
+   ```powershell
+   corepack enable
+   corepack prepare pnpm@9.15.5 --activate
+   ```
+2. ثبّت التبعيات:
+   ```bash
+   pnpm install -w
+   ```
+3. شغّل جميع الخدمات (أو شغّل خدمات محددة حسب الحاجة):
+   ```bash
+   docker compose -f infra/docker-compose.yml up --build
+   # مثال لتشغيل خدمة واحدة: docker compose -f infra/docker-compose.yml up --build postgres menu
+   ```
+4. راقب السجلات:
+   ```bash
+   docker compose logs -f
+   ```
+
+- ملاحظة Windows: قد تواجه مشاكل طول مسار عند حذف `node_modules`. استخدم `npx rimraf` أو شغّل داخل WSL إذا ظهرت أخطاء.
+- ضع جدول متغيرات البيئة لكل خدمة في `docs/` أو ملف مرجعي داخل `docs/`.
 
 Please follow `CONTRIBUTING.md` and the ADRs in `docs/DECISIONS` when proposing changes that affect architecture, service contracts, or shared packages.
 
+---
 ---

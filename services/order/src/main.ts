@@ -38,10 +38,10 @@ export const bootstrap = async () => {
   }
 
   server = await app.listen(cfg.PORT);
-  // Attach socket.io
+  // Attach socket.io instance
   const io = setupWebSocket(server);
-  // إذا كنت بحاجة للوصول إلى io في أماكن أخرى، قم بتخزينه في متغير خارجي أو خدمة مخصصة بدلاً من التعيين على app مباشرة
-  // مثال: export { io } أو استخدم Singleton
+  // If you need to access io elsewhere, store it in an external variable or a dedicated service instead of assigning it directly to app
+  // Example: export { io } or use a Singleton pattern
 
   console.log(`🚀 Order service running on port ${cfg.PORT}`);
   return app;
@@ -49,7 +49,7 @@ export const bootstrap = async () => {
 
 export default bootstrap;
 
-// استدعاء تلقائي فقط إذا شُغّل الملف مباشرة
+// Auto-invoke only if this file is run directly
 if (require.main === module) {
   bootstrap().catch(error => {
     console.error('Failed to bootstrap:', error);

@@ -108,12 +108,12 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="admin-page" style={{ padding: '24px', maxWidth: '1000px', margin: '0 auto' }}>
+    <div className="admin-page admin-container">
       <h1>Admin Dashboard</h1>
       
-      <div className="card" style={{ marginBottom: '32px' }}>
+      <div className="card admin-card">
         <h2>{editingMenu ? 'Edit Menu' : 'Create New Menu'}</h2>
-        <div style={{ display: 'grid', gap: '16px', marginBottom: '16px' }}>
+        <div className="admin-form-grid">
           <div>
             <label htmlFor="menuId">Menu ID (Unique): </label>
             <input 
@@ -138,7 +138,7 @@ export default function AdminPage() {
         </div>
 
         <h3>Items</h3>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr auto', gap: '8px', alignItems: 'end', marginBottom: '16px' }}>
+        <div className="admin-items-grid">
           <div>
             <label htmlFor="itemId">ID</label>
             <input id="itemId" type="text" value={itemId} onChange={(e) => setItemId(e.target.value)} className="checkout-input" placeholder="e.g. burger-1" />
@@ -158,16 +158,16 @@ export default function AdminPage() {
           <button onClick={handleAddItem} className="btn btn-accent">Add Item</button>
         </div>
 
-        <div style={{ marginBottom: '16px' }}>
+        <div className="admin-items-list">
           {items.map((item, idx) => (
-            <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', borderBottom: '1px solid #eee' }}>
+            <div key={idx} className="admin-item-row">
               <span>{item.name} (${item.price})</span>
-              <button onClick={() => handleRemoveItem(idx)} style={{ color: 'red', border: 'none', background: 'none', cursor: 'pointer' }}>Remove</button>
+              <button onClick={() => handleRemoveItem(idx)} className="admin-remove-btn">Remove</button>
             </div>
           ))}
         </div>
 
-        <div style={{ display: 'flex', gap: '16px' }}>
+        <div className="admin-actions">
           <button onClick={editingMenu ? handleUpdateMenu : handleCreateMenu} className="btn btn-primary">
             {editingMenu ? 'Update Menu' : 'Create Menu'}
           </button>
@@ -176,15 +176,15 @@ export default function AdminPage() {
       </div>
 
       <h2>Existing Menus</h2>
-      {loading ? <p>Loading...</p> : error ? <p style={{ color: 'red' }}>{error}</p> : (
+      {loading ? <p>Loading...</p> : error ? <p className="admin-error">{error}</p> : (
         <div className="menu-grid">
           {menus.map((menu) => (
             <div key={menu.id} className="card menu-card">
               <h3>{menu.name}</h3>
               <p>{menu.items?.length || 0} items</p>
-              <div style={{ marginTop: 'auto', display: 'flex', gap: '8px' }}>
-                <button onClick={() => startEdit(menu)} className="btn btn-outline" style={{ padding: '6px 12px', fontSize: '0.9rem' }}>Edit</button>
-                <button onClick={() => handleDeleteMenu(menu.id)} className="btn btn-outline" style={{ padding: '6px 12px', fontSize: '0.9rem', borderColor: 'red', color: 'red' }}>Delete</button>
+              <div className="admin-menu-actions">
+                <button onClick={() => startEdit(menu)} className="btn btn-outline admin-btn-small">Edit</button>
+                <button onClick={() => handleDeleteMenu(menu.id)} className="btn btn-outline admin-btn-small admin-btn-delete">Delete</button>
               </div>
             </div>
           ))}

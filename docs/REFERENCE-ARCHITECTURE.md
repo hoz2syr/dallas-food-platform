@@ -1,34 +1,77 @@
-# Dallas Food Platform — Reference Architecture
 
-Purpose
--------
+# Reference Architecture: Clean Architecture for Services
 
-The Dallas Food Platform is a hybrid, service-based system that composes small backend services to provide ordering, inventory, user management, and related capabilities. The platform emphasizes clear separation of concerns, testability, and the ability to run services independently in development and production.
+This document defines the reference architecture for all backend services in the Dallas Food Platform, using Clean Architecture principles. The `order-service` is the canonical example for structure and best practices.
 
-High-level system architecture
-------------------------------
+---
 
-- Hybrid, service-based: each backend capability is implemented as an independent service (microservice-style) that can be developed, tested, deployed, and scaled independently.
-- Services communicate over well-defined APIs (HTTP/REST for synchronous flows) and may emit domain events for asynchronous processing.
-- Infrastructure (datastores, message brokers) is composed per-environment; services should remain platform-agnostic and interact with infrastructure through adapters.
+## Clean Architecture Layers
 
-Clean Architecture layers
--------------------------
+1. **Domain Layer**
+	 - Pure business logic, domain models, and rules
+	 - No dependencies on frameworks or infrastructure
 
-This repository follows the Clean Architecture approach. Services are organized into three primary layers:
+2. **Application Layer**
+	 - Use cases, service interfaces, and orchestration logic
+	 - Coordinates domain logic and infrastructure
 
-- Domain: business entities, value objects, domain events, and domain-specific rules. No external dependencies.
-- Application: use-cases, commands, and orchestration logic that implement application workflows. Coordinates domain and infrastructure boundaries via well-defined interfaces.
-- Infrastructure: framework and platform-specific code — controllers, repositories, external API clients, database implementations, and DI wiring. Maps domain errors to transport-level responses.
+3. **Infrastructure Layer**
+	 - Frameworks, adapters, database access, external APIs, messaging
+	 - Implements interfaces defined in the application layer
 
-Why the Order Service is the reference
--------------------------------------
+---
 
-The `services/order` implementation is the canonical example of the above structure in this workspace. It demonstrates:
+## Rationale
 
-- A minimal NestJS bootstrap with a thin HTTP controller.
-- A domain model separated from persistence and HTTP adapters.
-- Both an in-memory repository and a Postgres-backed repository implementation.
-- A small set of unit tests exercising domain and application logic.
+- **Separation of Concerns:** Business logic is isolated from frameworks and infrastructure
+- **Testability:** Domain and application logic are easily unit tested
+- **Flexibility:** Infrastructure (DB, messaging, APIs) can be swapped with minimal impact
 
-Teams should use the Order Service as the starting point (reference) when creating new backend services for the platform.
+---
+
+## Service Folder Structure Example
+
+```
+src/
+	domain/
+		models.ts
+		...
+	application/
+		use-cases/
+		services/
+		...
+	infrastructure/
+		db/
+		api/
+		...
+```
+
+---
+
+## Best Practices
+
+- Keep domain logic pure and framework-agnostic
+- Application layer should not depend on infrastructure details
+- Infrastructure implements interfaces from the application layer
+- Use dependency injection for infrastructure components
+- Favor composition over inheritance
+
+---
+
+## Why the Order Service is the Reference
+
+The `services/order` implementation is the canonical example of this structure. It demonstrates:
+
+- Minimal NestJS bootstrap with a thin HTTP controller
+- Domain model separated from persistence and HTTP adapters
+- Both in-memory and Postgres-backed repository implementations
+- Unit tests for domain and application logic
+
+Teams should use the Order Service as a starting point when creating new backend services for the platform.
+
+---
+
+## See Also
+
+- [ARCHITECTURE_OVERVIEW.md](./ARCHITECTURE_OVERVIEW.md)
+- [SERVICE-BLUEPRINT.md](./SERVICE-BLUEPRINT.md)

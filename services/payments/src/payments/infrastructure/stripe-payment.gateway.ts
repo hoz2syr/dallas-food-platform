@@ -1,104 +1,66 @@
-import { Injectable } from '@nestjs/common';
-import { Payment, PaymentMethod, Currency } from '../domain/payment.entity';
-import { PaymentGateway } from '../domain/payment.gateway.interface';
+import { Injectable, Logger } from '@nestjs/common';
+import { PaymentGateway, ProcessPaymentParams, ProcessPaymentResult } from '../domain/payment.gateway.interface';
 
 @Injectable()
 export class StripePaymentGateway implements PaymentGateway {
-  constructor() {
-    // Initialize Stripe client here
-    // const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-  }
+  private readonly logger = new Logger(StripePaymentGateway.name);
 
-  async processPayment(
-    payment: Payment,
-    paymentDetails: {
-      cardToken?: string;
-      paypalToken?: string;
-      applePayToken?: string;
-      googlePayToken?: string;
-    }
-  ): Promise<{
-    success: boolean;
-    transactionId?: string;
-    error?: string;
-    gatewayResponse?: any;
-  }> {
+  async processPayment(params: ProcessPaymentParams): Promise<ProcessPaymentResult> {
     try {
-      // Simulate Stripe payment processing
-      // In real implementation, use Stripe SDK
-
-      if (!paymentDetails.cardToken && !paymentDetails.paypalToken) {
-        return {
-          success: false,
-          error: 'Payment method details required',
-        };
-      }
-
-      // Simulate successful payment
-      const transactionId = `stripe_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
+      this.logger.log(`Processing payment: ${params.amount} ${params.currency}`);
+      
+      // TODO: Implement actual Stripe integration
+      // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      // const paymentIntent = await stripe.paymentIntents.create({...});
+      
+      // Simulate successful payment for now
+      const transactionId = `stripe_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      
       return {
         success: true,
         transactionId,
-        gatewayResponse: {
-          id: transactionId,
-          amount: payment.amount,
-          currency: payment.currency.toLowerCase(),
-          status: 'succeeded',
-        },
+        amount: params.amount,
+        currency: params.currency,
       };
     } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-        gatewayResponse: error,
-      };
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      
+      this.logger.error('Payment processing failed', {
+        error: errorMessage,
+        stack: errorStack,
+        params,
+      });
+      
+      throw new Error(`Payment processing failed: ${errorMessage}`);
     }
   }
 
-  async refundPayment(
-    payment: Payment,
-    amount: number,
-    reason?: string
-  ): Promise<{
-    success: boolean;
-    refundId?: string;
-    error?: string;
-    gatewayResponse?: any;
-  }> {
+  async refundPayment(transactionId: string, amount?: number): Promise<ProcessPaymentResult> {
     try {
-      // Simulate Stripe refund processing
-      const refundId = `refund_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
+      this.logger.log(`Processing refund for transaction: ${transactionId}`);
+      
+      // TODO: Implement actual Stripe refund
+      // const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+      // const refund = await stripe.refunds.create({...});
+      
       return {
         success: true,
-        refundId,
-        gatewayResponse: {
-          id: refundId,
-          amount,
-          reason,
-          status: 'succeeded',
-        },
+        transactionId: `refund_${transactionId}`,
+        amount: amount || 0,
+        currency: 'USD',
       };
     } catch (error) {
-      return {
-        success: false,
-        error: error.message,
-        gatewayResponse: error,
-      };
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      
+      this.logger.error('Refund processing failed', {
+        error: errorMessage,
+        stack: errorStack,
+        transactionId,
+      });
+      
+      throw new Error(`Refund processing failed: ${errorMessage}`);
     }
-  }
-
-  validatePaymentMethod(method: PaymentMethod): boolean {
-    return [
-      PaymentMethod.CREDIT_CARD,
-      PaymentMethod.DEBIT_CARD,
-      PaymentMethod.APPLE_PAY,
-      PaymentMethod.GOOGLE_PAY,
-    ].includes(method);
-  }
-
-  getSupportedCurrencies(): Currency[] {
-    return [Currency.USD, Currency.EUR, Currency.GBP];
   }
 }

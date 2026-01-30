@@ -1,114 +1,120 @@
-export enum PaymentStatus {
-  PENDING = 'pending',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-  REFUNDED = 'refunded',
-  PARTIALLY_REFUNDED = 'partially_refunded',
-}
+export type PaymentStatus = 
+  | 'pending' 
+  | 'processing' 
+  | 'succeeded' 
+  | 'failed' 
+  | 'refunded'
+  | 'partially_refunded';
 
-export enum PaymentMethod {
-  CREDIT_CARD = 'credit_card',
-  DEBIT_CARD = 'debit_card',
-  PAYPAL = 'paypal',
-  APPLE_PAY = 'apple_pay',
-  GOOGLE_PAY = 'google_pay',
-}
+export type PaymentMethod = 'card' | 'wallet' | 'bank_transfer';
 
-export enum Currency {
-  USD = 'USD',
-  EUR = 'EUR',
-  GBP = 'GBP',
-  SAR = 'SAR',
+export type Currency = 'USD' | 'EUR' | 'GBP' | 'SAR';
+
+export interface PaymentProps {
+  id?: string;
+  orderId: string;
+  userId: string;
+  customerId?: string;
+  amount: number;
+  currency: Currency;
+  status: PaymentStatus;
+  paymentMethod: PaymentMethod;
+  transactionId?: string;
+  refundedAmount?: number;
+  metadata?: Record<string, any>;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export class Payment {
-  private constructor(
-    public readonly id: string,
-    public readonly orderId: string,
-    public readonly customerId: string,
-    public readonly amount: number,
-    public readonly currency: Currency,
-    public readonly method: PaymentMethod,
-    public status: PaymentStatus,
-    public readonly createdAt: Date,
-    public updatedAt: Date,
-    public gatewayTransactionId?: string,
-    public gatewayResponse?: any,
-  ) {}
+  id: string;
+  orderId: string;
+  userId: string;
+  customerId?: string;
+  amount: number;
+  currency: Currency;
+  status: PaymentStatus;
+  paymentMethod: PaymentMethod;
+  transactionId?: string;
+  refundedAmount: number;
+  metadata?: Record<string, any>;
+  createdAt: Date;
+  updatedAt: Date;
 
-  static create(
-    orderId: string,
-    customerId: string,
-    amount: number,
-    currency: Currency,
-    method: PaymentMethod,
-  ): Payment {
-    const id = `payment_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-    const now = new Date();
-
-    return new Payment(
-      id,
-      orderId,
-      customerId,
-      amount,
-      currency,
-      method,
-      PaymentStatus.PENDING,
-      now,
-      now,
-    );
+  private constructor(props: PaymentProps) {
+    this.id = props.id || this.generateId();
+    this.orderId = props.orderId;
+    this.userId = props.userId;
+    this.customerId = props.customerId;
+    this.amount = props.amount;
+    this.currency = props.currency;
+    this.status = props.status;
+    this.paymentMethod = props.paymentMethod;
+    this.transactionId = props.transactionId;
+    this.refundedAmount = props.refundedAmount || 0;
+    this.metadata = props.metadata;
+    this.createdAt = props.createdAt || new Date();
+    this.updatedAt = props.updatedAt || new Date();
   }
 
-  static fromPersistence(data: any): Payment {
-    return new Payment(
-      data.id,
-      data.orderId,
-      data.customerId,
-      data.amount,
-      data.currency,
-      data.method,
-      data.status,
-      new Date(data.createdAt),
-      new Date(data.updatedAt),
-      data.gatewayTransactionId,
-      data.gatewayResponse,
-    );
+  static create(props: PaymentProps): Payment {
+    return new Payment(props);
   }
 
-  markAsCompleted(gatewayTransactionId?: string, gatewayResponse?: any): void {
-    this.status = PaymentStatus.COMPLETED;
+  private generateId(): string {
+    return `pay_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+  }
+
+  markAsProcessing(): void {
+    this.status = 'processing';
     this.updatedAt = new Date();
-    this.gatewayTransactionId = gatewayTransactionId;
-    this.gatewayResponse = gatewayResponse;
   }
 
-  markAsFailed(gatewayResponse?: any): void {
-    this.status = PaymentStatus.FAILED;
+  markAsSucceeded(transactionId: string): void {
+    this.status = 'succeeded';
+    this.transactionId = transactionId;
     this.updatedAt = new Date();
-    this.gatewayResponse = gatewayResponse;
+  }
+
+  markAsFailed(reason?: string): void {
+    this.status = 'failed';
+    if (reason) {
+      this.metadata = { ...this.metadata, failureReason: reason };
+    }
+    this.updatedAt = new Date();
+  }
+
+  markAsRefunded(amount?: number): void {
+    const refundAmount = amount || this.amount;
+    this.refundedAmount = (this.refundedAmount || 0) + refundAmount;
+    
+    if (this.refundedAmount >= this.amount) {
+      this.status = 'refunded';
+    } else {
+      this.status = 'partially_refunded';
+    }
+    this.updatedAt = new Date();
   }
 
   canBeRefunded(): boolean {
-    return this.status === PaymentStatus.COMPLETED;
-  }
-
-  isFullyRefunded(): boolean {
-    return this.status === PaymentStatus.REFUNDED;
+    return this.status === 'succeeded' && this.refundedAmount < this.amount;
   }
 
   toPersistence(): any {
     return {
       id: this.id,
       orderId: this.orderId,
+      userId: this.userId,
       customerId: this.customerId,
       amount: this.amount,
       currency: this.currency,
-      method: this.method,
       status: this.status,
+      paymentMethod: this.paymentMethod,
+      transactionId: this.transactionId,
+      refundedAmount: this.refundedAmount,
+      metadata: this.metadata,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
-      gatewayTransactionId: this.gatewayTransactionId,
-      gatewayResponse: this.gatewayResponse,
     };
   }
 }

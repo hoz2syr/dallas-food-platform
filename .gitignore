@@ -3,8 +3,7 @@ node_modules/
 dist/
 build/
 .env
-.env.local
-.env.*.local
+.env.*
 .next/
 coverage/
 npm-debug.log*
@@ -20,3 +19,7 @@ coverage/**/*
 ._*
 # Windows
 Thumbs.db
+
+# Prevent secrets and envs
+.env
+.env.*

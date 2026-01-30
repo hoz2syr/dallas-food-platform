@@ -1,9 +1,9 @@
-// services/order-tracking.service.ts
+// OrderTrackingService: Handles order tracking logic and mock implementations
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class OrderTrackingService {
-  // حساب التوقيتات التقديرية (mock)
+  // Calculate estimated timings for order stages (mock implementation)
   async calculateEstimates(orderId: string) {
     return {
       preparation: { estimated: 25, min: 15, max: 40 },
@@ -12,9 +12,9 @@ export class OrderTrackingService {
     };
   }
 
-  // تحديث مرحلة الطلب (mock)
+  // Update the order stage (mock implementation)
   async updateOrderStage(orderId: string, stage: string, status: string, userId: number, notes?: string, estimatedMinutes?: number) {
-    // هنا يتم تحديث قاعدة البيانات وتسجيل التايملاين
+    // Here, the database and timeline would be updated (mock)
     return {
       success: true,
       orderId,
@@ -26,7 +26,7 @@ export class OrderTrackingService {
     };
   }
 
-  // جلب بيانات تتبع الطلب (mock)
+  // Retrieve order tracking data (mock implementation)
   async getOrderTrackingData(orderId: string) {
     return {
       orderId,
@@ -37,7 +37,7 @@ export class OrderTrackingService {
     };
   }
 
-  // جلب الطلبات النشطة (mock)
+  // Retrieve active orders (mock implementation)
   async getActiveOrders(query: { status?: string; stage?: string; timeRange?: string }) {
     return {
       count: 1,

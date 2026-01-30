@@ -1,5 +1,6 @@
 import React from 'react';
 import '../styles/base.css';
+import '../styles/home.css';
 import { LangProvider } from '../lib/lang/lang-context';
 import LangSwitcher from '../lib/lang/lang-switcher';
 import Search from '../components/search/Search';

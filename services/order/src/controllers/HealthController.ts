@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import amqp from 'amqplib';
-// افترض وجود دالة getDataSource للاتصال بقاعدة البيانات
+// Assumes a getDataSource function exists for database connectivity
 export class HealthController {
         private async checkRabbitMQ(): Promise<{ healthy: boolean; details?: string }> {
             const amqpUrl = process.env.RABBITMQ_URL || 'amqp://admin:admin123@rabbitmq:5672';
@@ -21,6 +21,7 @@ export class HealthController {
 
     constructor() {
         setInterval(() => {
+            // Update the count of connected WebSocket clients (if wsServer is available)
             // this.wsConnectedClients = global.wsServer?.engine?.clientsCount || 0;
         }, 5000);
     }
@@ -34,7 +35,7 @@ export class HealthController {
             version: process.env.npm_package_version || '1.0.0',
             uptime: process.uptime(),
             checks: {
-                database: { healthy: true }, // يمكن تحسينها لاحقاً
+                database: { healthy: true }, // Can be improved to check real DB health
                 rabbitmq: rabbitmqCheck,
                 websocket: { healthy: true },
                 memory: { healthy: true }

@@ -1,20 +1,16 @@
-import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { Payment, PaymentMethod, Currency } from '../domain/payment.entity';
 import { PaymentRepository } from '../domain/payment.repository.interface';
 import { PaymentGateway } from '../domain/payment.gateway.interface';
 
 export interface ProcessPaymentCommand {
   orderId: string;
-  customerId: string;
+  userId: string;
+  customerId?: string;
   amount: number;
   currency: Currency;
-  method: PaymentMethod;
-  paymentDetails?: {
-    cardToken?: string;
-    paypalToken?: string;
-    applePayToken?: string;
-    googlePayToken?: string;
-  };
+  paymentMethod: PaymentMethod;
+  metadata?: Record<string, any>;
 }
 
 @Injectable()
@@ -24,56 +20,49 @@ export class ProcessPaymentUseCase {
     private readonly paymentGateway: PaymentGateway,
   ) {}
 
-  async execute(command: ProcessPaymentCommand): Promise<{
-    success: boolean;
-    payment: Payment;
-    message: string;
-  }> {
-    // Validate payment method
-    if (!this.paymentGateway.validatePaymentMethod(command.method)) {
-      throw new BadRequestException(`Payment method ${command.method} is not supported`);
-    }
-
-    // Check if payment already exists for this order
+  async execute(command: ProcessPaymentCommand): Promise<Payment> {
+    // Check if a payment already exists for this order
     const existingPayment = await this.paymentRepository.findByOrderId(command.orderId);
     if (existingPayment) {
       throw new BadRequestException('Payment already exists for this order');
     }
 
     // Create payment entity
-    const payment = Payment.create(
-      command.orderId,
-      command.customerId,
-      command.amount,
-      command.currency,
-      command.method,
-    );
+    const payment = Payment.create({
+      orderId: command.orderId,
+      userId: command.userId,
+      customerId: command.customerId,
+      amount: command.amount,
+      currency: command.currency,
+      status: 'pending',
+      paymentMethod: command.paymentMethod,
+      metadata: command.metadata,
+    });
 
     try {
-      // Process payment through gateway
-      const gatewayResult = await this.paymentGateway.processPayment(
-        payment,
-        command.paymentDetails || {},
-      );
-
-      if (gatewayResult.success) {
-        payment.markAsCompleted(gatewayResult.transactionId, gatewayResult.gatewayResponse);
-      } else {
-        payment.markAsFailed(gatewayResult.gatewayResponse);
-        await this.paymentRepository.save(payment);
-        throw new BadRequestException(`Payment failed: ${gatewayResult.error}`);
-      }
-
-      // Save payment
+      // Save initial payment
       await this.paymentRepository.save(payment);
 
-      return {
-        success: true,
-        payment,
-        message: 'Payment processed successfully',
-      };
+      // Mark as processing
+      payment.markAsProcessing();
+      await this.paymentRepository.save(payment);
+
+      // Process payment through gateway
+      const result = await this.paymentGateway.processPayment({
+        amount: payment.amount,
+        currency: payment.currency,
+        paymentMethod: payment.paymentMethod,
+        metadata: payment.metadata,
+      });
+
+      // Mark as succeeded
+      payment.markAsSucceeded(result.transactionId);
+      await this.paymentRepository.save(payment);
+
+      return payment;
     } catch (error) {
-      payment.markAsFailed(error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      payment.markAsFailed(errorMessage);
       await this.paymentRepository.save(payment);
       throw error;
     }

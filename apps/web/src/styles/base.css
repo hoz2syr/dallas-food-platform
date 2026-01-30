@@ -1,3 +1,59 @@
+/* === Admin Page Custom Styles === */
+.admin-container {
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+.admin-card {
+  margin-bottom: 32px;
+}
+.admin-form-grid {
+  display: grid;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.admin-items-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr auto;
+  gap: 8px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+.admin-items-list {
+  margin-bottom: 16px;
+}
+.admin-item-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+.admin-remove-btn {
+  color: red;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+.admin-actions {
+  display: flex;
+  gap: 16px;
+}
+.admin-error {
+  color: red;
+}
+.admin-menu-actions {
+  margin-top: auto;
+  display: flex;
+  gap: 8px;
+}
+.admin-btn-small {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+.admin-btn-delete {
+  border-color: red;
+  color: red;
+}
 /* زر إضافة إلى السلة في الصفحة الرئيسية */
 .add-to-cart-btn {
   margin-left: 16px;

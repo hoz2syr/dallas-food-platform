@@ -10,7 +10,7 @@ export class PostgresMenuRepository implements MenuRepository {
     const values = [menu.id, menu.name, menu.createdAt];
     await client.query(text, values as any);
 
-    // Remove existing items and re-insert for this menu
+    // Remove existing items and re-insert for this menu (ensures menu items are up-to-date)
     await client.query('DELETE FROM menu_items WHERE menu_id = $1', [menu.id]);
     for (const item of menu.items) {
       await client.query(
@@ -45,7 +45,7 @@ export class PostgresMenuRepository implements MenuRepository {
   }
 
   async update(menu: Menu): Promise<void> {
-    // Save is already upsert, so just call save
+    // Save method already performs upsert, so just call save
     await this.save(menu);
   }
 

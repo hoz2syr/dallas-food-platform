@@ -1,8 +1,5 @@
+
 version: "3.8"
-
-# Dallas Food Platform - Complete Docker Compose Configuration
-# Defines all services, apps, and infrastructure for the restaurant management platform
-
 services:
   rabbitmq:
     image: rabbitmq:3.13-management-alpine
@@ -17,34 +14,42 @@ services:
       RABBITMQ_DEFAULT_VHOST: /
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-      - ./infra/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
-      - ./infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      # Files disabled until created
+      # - ./infra/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+      # - ./infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
     networks:
-      - default
+      - backend
+      - monitoring
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 20s
-  # Database Services
+      start_period: 40s
+    restart: unless-stopped
+
   postgres:
     image: postgres:16-alpine
     container_name: dallas-postgres
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: dallas
-      POSTGRES_USER: dallas
-      POSTGRES_PASSWORD: dallas
+      POSTGRES_DB: ${POSTGRES_DB:-dallas}
+      POSTGRES_USER: ${POSTGRES_USER:-dallas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dallas}
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.UTF-8"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - backend
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U dallas -d dallas"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dallas} -d ${POSTGRES_DB:-dallas}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   redis:
     image: redis:7-alpine
@@ -52,191 +57,295 @@ services:
     ports:
       - "6379:6379"
     restart: unless-stopped
-    command: redis-server --appendonly yes
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
     volumes:
       - redis_data:/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis123}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
-  # Backend Services
   menu-service:
     build:
-      context: ./services/menu
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: services/menu/Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-production}
     container_name: dallas-menu-service
     ports:
       - "3001:3001"
     restart: unless-stopped
     environment:
+      NODE_ENV: ${NODE_ENV:-production}
       PORT: 3001
-      API_KEY: test-key
-      DATABASE_URL: postgres://dallas:dallas@postgres:5432/dallas
-      REDIS_URL: redis://redis:6379
+      API_KEY: ${API_KEY}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dallas}:${POSTGRES_PASSWORD:-dallas}@postgres:5432/${POSTGRES_DB:-dallas}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin123}@rabbitmq:5672
     depends_on:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:3001/health || wget --no-verbose --tries=1 --spider http://localhost:3001/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 40s
 
   order-service:
     build:
-      context: ./services/order
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: services/order/Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-production}
     container_name: dallas-order-service
     ports:
       - "3000:3000"
-    # WebSocket يعمل على نفس المنفذ مع HTTP
     restart: unless-stopped
     environment:
+      NODE_ENV: ${NODE_ENV:-production}
       PORT: 3000
-      API_KEY: test-key
+      API_KEY: ${API_KEY}
       USE_IN_MEMORY: 'false'
-      DATABASE_URL: postgres://dallas:dallas@localhost:5432/dallas
-      REDIS_URL: redis://redis:6379
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dallas}:${POSTGRES_PASSWORD:-dallas}@postgres:5432/${POSTGRES_DB:-dallas}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin123}@rabbitmq:5672
       MENU_SERVICE_URL: http://menu-service:3001
+      ENABLE_WEBSOCKET: 'true'
+      WS_PATH: /ws
     depends_on:
       postgres:
         condition: service_healthy
       redis:
-        condition: service_started
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
       menu-service:
         condition: service_healthy
+    networks:
+      - backend
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/health || wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
 
   payments-service:
     build:
-      context: ./services/payments
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: services/payments/Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-production}
     container_name: dallas-payments-service
     ports:
       - "3003:3003"
     restart: unless-stopped
     environment:
+      NODE_ENV: ${NODE_ENV:-production}
       PORT: 3003
-      API_KEY: test-key
-      DATABASE_URL: postgres://dallas:dallas@postgres:5432/dallas
-      STRIPE_SECRET_KEY: sk_test_placeholder
-      STRIPE_PUBLISHABLE_KEY: pk_test_placeholder
+      API_KEY: ${API_KEY}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dallas}:${POSTGRES_PASSWORD:-dallas}@postgres:5432/${POSTGRES_DB:-dallas}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin123}@rabbitmq:5672
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY}
+      STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET}
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:3003/health || wget --no-verbose --tries=1 --spider http://localhost:3003/health || exit 1"]
       interval: 30s
       timeout: 10s
-      retries: 3
+      start_period: 40s
 
   delivery-service:
     build:
-      context: ./services/delivery
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: services/delivery/Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-production}
     container_name: dallas-delivery-service
     ports:
       - "3004:3004"
     restart: unless-stopped
     environment:
+      NODE_ENV: ${NODE_ENV:-production}
       PORT: 3004
-      API_KEY: test-key
-      DATABASE_URL: postgres://dallas:dallas@postgres:5432/dallas
-      GOOGLE_MAPS_API_KEY: placeholder_key
+      API_KEY: ${API_KEY}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dallas}:${POSTGRES_PASSWORD:-dallas}@postgres:5432/${POSTGRES_DB:-dallas}
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis123}@redis:6379
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-admin}:${RABBITMQ_PASS:-admin123}@rabbitmq:5672
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - backend
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      test: ["CMD-SHELL", "curl -f http://localhost:3004/health || wget --no-verbose --tries=1 --spider http://localhost:3004/health || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
-
-  # API Gateway
+      start_period: 40s
   api-gateway:
     image: nginx:alpine
     container_name: dallas-api-gateway
     ports:
       - "8080:80"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./infra/nginx/conf.d:/etc/nginx/conf.d:ro
     depends_on:
-      - menu-service
-      - order-service
-      - payments-service
-      - delivery-service
+      menu-service:
+        condition: service_healthy
+      order-service:
+        condition: service_healthy
+      payments-service:
+        condition: service_healthy
+      delivery-service:
+        condition: service_healthy
+    networks:
+      - backend
+      - frontend
     restart: unless-stopped
-
-  # Frontend Applications
+    # api-gateway uses the official nginx image which doesn't include curl/wget
+    # Healthcheck removed to avoid false failures; rely on downstream service healthchecks
   web:
     build:
-      context: ./apps/web
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: apps/web/Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-production}
+        NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://api-gateway/api}
+        NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://api-gateway/ws}
     container_name: dallas-web
     ports:
       - "3002:3000"
     environment:
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:8080/api
-      NEXT_PUBLIC_API_KEY: test-key
-      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: placeholder_key
+      NODE_ENV: ${NODE_ENV:-production}
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-http://api-gateway/api}
+      NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL:-ws://api-gateway/ws}
+      NEXT_PUBLIC_API_KEY: ${API_KEY}
+      NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: ${STRIPE_PUBLISHABLE_KEY}
     depends_on:
-      - api-gateway
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - frontend
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000 || wget --no-verbose --tries=1 --spider http://localhost:3000 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   admin-dashboard:
     build:
-      context: ./apps/admin-dashboard
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: apps/admin-dashboard/Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-production}
     container_name: dallas-admin-dashboard
     ports:
       - "3005:3000"
     environment:
-      REACT_APP_API_BASE_URL: http://localhost:8080/api
-      REACT_APP_API_KEY: test-key
+      NODE_ENV: ${NODE_ENV:-production}
+      REACT_APP_API_BASE_URL: http://api-gateway/api
+      REACT_APP_WS_URL: ws://api-gateway/ws
+      REACT_APP_API_KEY: ${API_KEY}
     depends_on:
-      - api-gateway
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - frontend
     restart: unless-stopped
 
   customer-app:
     build:
-      context: ./apps/customer-app
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: apps/customer-app/Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-production}
     container_name: dallas-customer-app
     ports:
       - "3006:3000"
     environment:
-      REACT_APP_API_BASE_URL: http://localhost:8080/api
-      REACT_APP_API_KEY: test-key
+      NODE_ENV: ${NODE_ENV:-production}
+      REACT_APP_API_BASE_URL: http://api-gateway/api
+      REACT_APP_WS_URL: ws://api-gateway/ws
+      REACT_APP_API_KEY: ${API_KEY}
+      REACT_APP_GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+      REACT_APP_STRIPE_PUBLISHABLE_KEY: ${REACT_APP_STRIPE_PUBLISHABLE_KEY}
     depends_on:
-      - api-gateway
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - frontend
     restart: unless-stopped
 
   kitchen-display:
     build:
-      context: ./apps/kitchen-display
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: apps/kitchen-display/Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV:-production}
     container_name: dallas-kitchen-display
     ports:
       - "3007:3000"
     environment:
-      REACT_APP_API_BASE_URL: http://localhost:8080/api
-      REACT_APP_API_KEY: test-key
+      NODE_ENV: ${NODE_ENV:-production}
+      REACT_APP_API_BASE_URL: http://api-gateway/api
+      REACT_APP_WS_URL: ws://api-gateway/ws
+      REACT_APP_API_KEY: ${API_KEY}
     depends_on:
-      - api-gateway
+      api-gateway:
+        condition: service_healthy
+    networks:
+      - frontend
     restart: unless-stopped
-
-  # Monitoring and Logging
   prometheus:
     image: prom/prometheus:latest
     container_name: dallas-prometheus
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./infra/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--storage.tsdb.retention.time=30d'
+    networks:
+      - monitoring
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9090/-/healthy || wget --no-verbose --tries=1 --spider http://localhost:9090/-/healthy || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
   grafana:
     image: grafana/grafana:latest
@@ -244,19 +353,45 @@ services:
     ports:
       - "3008:3000"
     environment:
-      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_PASSWORD:-admin}
+      GF_INSTALL_PLUGINS: grafana-clock-panel,grafana-simple-json-datasource
+      GF_USERS_ALLOW_SIGN_UP: 'false'
     volumes:
       - grafana_data:/var/lib/grafana
+      - ./infra/monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./infra/monitoring/grafana/datasources:/etc/grafana/provisioning/datasources:ro
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
+    networks:
+      - monitoring
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:3000/api/health || wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
 volumes:
   postgres_data:
+    driver: local
   redis_data:
+    driver: local
   grafana_data:
+    driver: local
   rabbitmq_data:
+    driver: local
+  prometheus_data:
+    driver: local
 
 networks:
-  default:
-    name: dallas-network
+  backend:
+    name: dallas-backend
+    driver: bridge
+  frontend:
+    name: dallas-frontend
+    driver: bridge
+  monitoring:
+    name: dallas-monitoring
+    driver: bridge

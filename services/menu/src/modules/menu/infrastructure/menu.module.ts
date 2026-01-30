@@ -10,14 +10,14 @@ import { ApiKeyGuard } from '../../../../../shared/auth/api-key.guard';
 @Module({
 	controllers: [MenuController],
 	providers: [
-		// Repository binding: domain-defined abstraction token -> Postgres implementation
+		// Bind the domain-defined repository abstraction token to the Postgres implementation
 		{
 			provide: 'MenuRepository',
 			useClass: PostgresMenuRepository,
 		},
-		// Provide the concrete implementation as a provider token so it can be injected if needed
+		// Register the concrete Postgres repository for direct injection if needed
 		PostgresMenuRepository,
-		// CreateMenuUseCase must be instantiated with the repository; use a factory to avoid framework decorators in application layer
+		// Instantiate CreateMenuUseCase with the repository using a factory to avoid framework decorators in the application layer
 		{
 			provide: CreateMenuUseCase,
 			useFactory: (repo: any) => new CreateMenuUseCase(repo),

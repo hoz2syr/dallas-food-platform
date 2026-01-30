@@ -231,7 +231,7 @@ export default function HomePage() {
               <h3>اتصل بنا</h3>
               <p>هاتف: 01092888626</p>
               <p>هاتف: 0223456789</p>
-              <a href="https://wa.me/201092888626" className="whatsapp-btn" target="_blank">
+              <a href="https://wa.me/201092888626" className="whatsapp-btn" target="_blank" rel="noopener">
                 <i className="fab fa-whatsapp"></i> تواصل عبر واتساب
               </a>
             </div>
@@ -243,7 +243,7 @@ export default function HomePage() {
               <h3>موقعنا</h3>
               <p>123 شارع المطاعم، المنطقة الراقية</p>
               <p>القاهرة، مصر</p>
-              <a href="https://maps.google.com/?q=القاهرة+مصر" className="btn" target="_blank">عرض على الخريطة</a>
+              <a href="https://maps.google.com/?q=القاهرة+مصر" className="btn" target="_blank" rel="noopener">عرض على الخريطة</a>
             </div>
 
             <div className="contact-card">

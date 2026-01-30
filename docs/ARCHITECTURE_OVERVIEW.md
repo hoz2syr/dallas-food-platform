@@ -1,19 +1,40 @@
-Overview: Hybrid core + services
+---
+# Architecture Overview
 
-This project follows a "Hybrid core + services" architecture. A small, opinionated core provides shared concerns like authentication, observability, and platform-wide policies. Independent services (menu, order, delivery, payments) implement domain logic and own their data stores where appropriate. The hybrid model balances centralized governance and common tooling with autonomy for fast, independently deployable services.
+## Hybrid Core + Services Model
 
-Key points:
-- Core responsibilities: auth, logging, monitoring, CI/CD conventions, and shared libraries.
-- Services: small bounded contexts with clear APIs and independent release cycles.
-- Communication: prefer asynchronous events for eventual consistency; sync APIs for critical paths.
+The Dallas Food Platform is built on a "Hybrid Core + Services" architecture. This approach combines a small, centralized core for shared concerns (authentication, observability, platform policies) with a set of independent, focused microservices (order, menu, delivery, payments, etc.).
 
-See original architecture document.
+**Key Principles:**
+- Centralized governance for security, logging, monitoring, and CI/CD
+- Autonomous services with clear API boundaries and independent release cycles
+- Prefer asynchronous events for eventual consistency; use synchronous APIs for critical flows
+- Each service owns its data and domain logic
 
-## Technology Baseline
+## Technology Stack
 
-- Language: TypeScript
-- Runtime: Node.js (LTS)
-- Backend framework direction: NestJS
-- Package manager: pnpm
-- API style: REST-first, event-ready
-- Infra baseline: Docker (local-first)
+- **Language:** TypeScript (Node.js LTS)
+- **Backend Framework:** NestJS
+- **Frontend:** Next.js (App Router)
+- **Package Manager:** pnpm
+- **API Style:** REST-first, event-ready
+- **Infrastructure:** Docker, Docker Compose, Kubernetes-ready
+
+## Service Design
+
+- Services are small, focused, and independently deployable
+- Each service follows Clean Architecture (domain, application, infrastructure layers)
+- Shared libraries and types are extracted to `packages/`
+- Infrastructure and deployment scripts are in `infra/` (including `infra/scripts/`)
+
+## Communication
+
+- REST APIs for synchronous flows (e.g., order placement, menu queries)
+- Event-driven integration for cross-service workflows (e.g., order status updates, notifications)
+
+## See Also
+
+- `docs/REFERENCE-ARCHITECTURE.md` — Clean Architecture and service layering
+- `docs/SERVICE-BLUEPRINT.md` — service structure and best practices
+
+---

@@ -1,6 +1,7 @@
 # Admin Dashboard (لوحة تحكم الإدارة)
 
 واجهة مركزية لإدارة المطعم تشمل:
+
 - نظرة عامة (Dashboard Overview)
 - إدارة الطلبات
 - إدارة القائمة
@@ -11,20 +12,50 @@
 - إدارة الموظفين
 
 ## الهيكل الأولي
+
 - `src/pages/` — صفحات رئيسية لكل قسم
 - `src/components/` — مكونات مشتركة (جداول، بطاقات، إلخ)
 - `src/styles/` — أنماط CSS/SCSS
 - `src/api/` — استدعاءات API
 
-
 ## ربط مع الخدمات (APIs)
+
 - صفحة إدارة الطلبات (OrdersManagementPage) مرتبطة فعليًا مع API وتعرض الطلبات من endpoint `/api/orders` مع مؤشرات تحميل ورسائل خطأ.
 
 ## تحسين تجربة المستخدم (UI/UX)
+
 - تمت إضافة مؤشرات تحميل (`.loading`) ورسائل خطأ (`.error`) بتنسيق وألوان واضحة.
 - تم تحسين ألوان لوحة الإدارة لتكون أكثر وضوحًا وسهولة في الاستخدام.
 
 ## توثيق المكونات
+
 - Table: مكون جدول عام لعرض البيانات.
 - StatCard: بطاقة إحصائية مختصرة.
 - Sidebar: شريط تنقل جانبي ثابت لجميع الصفحات.
+
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the required values:
+
+- API_KEY
+- PORT
+
+## Build & Run
+
+```bash
+pnpm install
+pnpm run build
+pnpm run start
+```
+
+Or using Docker:
+
+```bash
+docker build -t admin-dashboard .
+docker run --env-file .env admin-dashboard
+```
+
+## Troubleshooting
+
+- Ensure all environment variables are set.
+- If you encounter build issues, clean the cache or delete node_modules and reinstall.
