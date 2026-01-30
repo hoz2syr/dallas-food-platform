@@ -1,6 +1,6 @@
 import { Cart, CartItem } from '../../types/cart.types';
 
-let state: Cart = { items: [], total: 0 };
+const state: Cart = { items: [], total: 0 };
 
 function computeTotal(items: CartItem[]) {
   return items.reduce((s, it) => s + it.price * it.quantity, 0);

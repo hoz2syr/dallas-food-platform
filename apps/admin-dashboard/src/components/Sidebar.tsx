@@ -5,6 +5,7 @@ import './Sidebar.css';
 const navItems = [
   { href: '/DashboardOverviewPage', label: 'الرئيسية' },
   { href: '/OrdersManagementPage', label: 'الطلبات' },
+  { href: '/PaymentsPage', label: 'المدفوعات' },
   { href: '/MenuManagementPage', label: 'القائمة' },
   { href: '/InventoryManagementPage', label: 'المخزون' },
   { href: '/AnalyticsPage', label: 'التقارير' },

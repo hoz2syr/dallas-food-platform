@@ -21,5 +21,8 @@
     "@types/supertest": "^6.0.3",
     "reflect-metadata": "^0.1.13",
     "supertest": "^6.3.3"
+  },
+  "resolutions": {
+    "reflect-metadata": "0.2.2"
   }
 }

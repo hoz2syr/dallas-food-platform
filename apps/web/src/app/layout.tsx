@@ -1,28 +1,21 @@
 import React from 'react';
+import '@fontsource/bodoni-moda/700.css';
+import '@fontsource/bodoni-moda/600.css';
+import '@fontsource/raleway/400.css';
+import '@fontsource/raleway/600.css';
 import '../styles/base.css';
 import '../styles/home.css';
-import { LangProvider } from '../lib/lang/lang-context';
-import LangSwitcher from '../lib/lang/lang-switcher';
-import Search from '../components/search/Search';
+import Providers from '../components/layout/Providers';
+import Header from '../components/layout/Header';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html>
+    <html lang="en">
       <body>
-        <LangProvider>
-          <header className="app-header">
-            <nav className="app-nav">
-              <a href="/">Home</a>
-              <a href="/menu">Menu</a>
-              <a href="/cart">Cart</a>
-            </nav>
-            <div className="header-controls">
-              <Search />
-              <LangSwitcher />
-            </div>
-          </header>
+        <Providers>
+          <Header />
           <main>{children}</main>
-        </LangProvider>
+        </Providers>
       </body>
     </html>
   );

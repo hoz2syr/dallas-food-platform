@@ -52,8 +52,8 @@ export async function httpClient(path: string, method: HttpMethod = 'GET', body?
 
   if (!res.ok) {
     const err = new Error(`HTTP ${res.status}: ${text}`);
-    (err as any).status = res.status;
-    (err as any).body = parsed;
+    (err as { status: number; body: unknown }).status = res.status;
+    (err as { status: number; body: unknown }).body = parsed;
     throw err;
   }
 

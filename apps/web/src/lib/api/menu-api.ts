@@ -1,10 +1,10 @@
 import { httpFetch } from './http-client';
-import { Menu } from '../../types/api/menu.types';
+import { Menu, CreateMenuRequest, UpdateMenuRequest } from '../../types/api/menu.types';
 import { HttpError } from '../../types/api/error.types';
 
 async function handleResponse(res: Response) {
   const text = await res.text();
-  let parsed: any = text;
+  let parsed: unknown = text;
   try {
     parsed = text ? JSON.parse(text) : null;
   } catch (_e) {
@@ -19,7 +19,7 @@ async function handleResponse(res: Response) {
 }
 
 export async function fetchMenus(): Promise<Menu[]> {
-  const res = await httpFetch('/menus', { method: 'GET' });
+  const res = await httpFetch('/api/menu/', { method: 'GET' });
   const data = await handleResponse(res);
   // normalize to Menu[]
   if (Array.isArray(data)) return data as Menu[];
@@ -28,30 +28,30 @@ export async function fetchMenus(): Promise<Menu[]> {
 }
 
 export async function fetchMenu(id: string): Promise<Menu> {
-  const res = await httpFetch(`/menus/${encodeURIComponent(id)}`, { method: 'GET' });
+  const res = await httpFetch(`/api/menu/${encodeURIComponent(id)}`, { method: 'GET' });
   const data = await handleResponse(res);
   return data as Menu;
 }
 
-export async function createMenu(menu: { menuId: string; name: string; items: any[] }): Promise<any> {
-  const res = await httpFetch('/menus', {
+export async function createMenu(menu: CreateMenuRequest): Promise<Menu> {
+  const res = await httpFetch('/api/menu/', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(menu),
   });
-  return handleResponse(res);
+  return handleResponse(res) as Promise<Menu>;
 }
 
-export async function updateMenu(id: string, menu: { name: string; items: any[] }): Promise<any> {
+export async function updateMenu(id: string, menu: UpdateMenuRequest): Promise<Menu> {
   const res = await httpFetch(`/menus/${encodeURIComponent(id)}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(menu),
   });
-  return handleResponse(res);
+  return handleResponse(res) as Promise<Menu>;
 }
 
-export async function deleteMenu(id: string): Promise<any> {
+export async function deleteMenu(id: string): Promise<void> {
   const res = await httpFetch(`/menus/${encodeURIComponent(id)}`, { method: 'DELETE' });
-  return handleResponse(res);
+  await handleResponse(res);
 }

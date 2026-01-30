@@ -9,6 +9,14 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@emotion/cache": "^11.14.0",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@fontsource/bodoni-moda": "^5.2.7",
+    "@fontsource/raleway": "^5.2.8",
+    "@mui/icons-material": "^7.3.7",
+    "@mui/material": "^7.3.7",
+    "lucide-react": "^0.563.0",
     "next": "^16.1.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3"

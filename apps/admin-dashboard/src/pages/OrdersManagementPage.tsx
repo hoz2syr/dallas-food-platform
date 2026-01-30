@@ -4,7 +4,7 @@ import { WebSocketClient } from '../lib/websocket';
 import { Order } from '../components/Orders/types';
 import { OrderStatusBadge } from '../components/Orders/OrderStatusBadge';
 import { OrderActions } from '../components/Orders/OrderActions';
-import '../styles/orders.css';
+import '../styles/orders.css'; // Import for side effects (styles)
 import { useToast } from '../components/ToastContext';
 
 export default function OrdersManagementPage() {
@@ -42,13 +42,14 @@ export default function OrdersManagementPage() {
       const data = await response.json();
       setOrders(data.orders || []);
       setError(null);
-    } catch (err: any) {
-      setError(err.message);
-      showToast('فشل في جلب الطلبات', 'error');
-    } finally {
-      setLoading(false);
-    }
-  }, [filter, sortBy, showToast]);
+    } catch (err) {
+        const errorMsg = err instanceof Error ? err.message : 'Unknown error';
+        setError(errorMsg);
+        showToast('فشل في جلب الطلبات', 'error');
+      } finally {
+        setLoading(false);
+      }
+    }, [filter, sortBy, showToast]);
 
   const updateOrderStatus = async (orderId: string, newStatus: Order['status']) => {
     try {
@@ -99,6 +100,7 @@ export default function OrdersManagementPage() {
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
               className="p-2 border rounded"
+              title="تصفية حسب الحالة"
             >
               <option value="all">جميع الطلبات</option>
               <option value="pending">قيد الانتظار</option>
@@ -113,8 +115,9 @@ export default function OrdersManagementPage() {
             <label className="block text-sm font-medium mb-1">ترتيب حسب</label>
             <select 
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              onChange={(e) => setSortBy(e.target.value as 'createdAt' | 'total')}
               className="p-2 border rounded"
+              title="ترتيب حسب"
             >
               <option value="createdAt">أحدث الطلبات</option>
               <option value="total">أعلى قيمة</option>
@@ -172,12 +175,11 @@ export default function OrdersManagementPage() {
               </tr>
             </thead>
             <tbody>
-              {sortedOrders.map((order, index) => (
+              {sortedOrders.map((order) => (
                 <tr 
                   key={order.id} 
-                  className="hover:bg-gray-50 border-b"
+                  className="hover:bg-gray-50 border-b cursor-pointer"
                   onClick={() => window.location.href = `/orders/${order.id}`}
-                  style={{ cursor: 'pointer' }}
                 >
                   <td className="p-3 font-semibold">#{order.id.slice(-6)}</td>
                   <td className="p-3">

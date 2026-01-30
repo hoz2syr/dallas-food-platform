@@ -5,10 +5,10 @@ export interface ApiError {
 
 export class HttpError extends Error {
   status: number;
-  body: any;
+  body: unknown;
 
-  constructor(status: number, body: any) {
-    super(body && body.message ? body.message : `HTTP ${status}`);
+  constructor(status: number, body: unknown) {
+    super(body && typeof body === 'object' && 'message' in body && typeof body.message === 'string' ? body.message : `HTTP ${status}`);
     this.status = status;
     this.body = body;
   }
