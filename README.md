@@ -111,6 +111,7 @@ See each service's README for more details on authentication requirements and pu
 
 ## Documentation
 
+- `docs/DOCS-AUDIT.md` — تقرير تدقيق التوثيق (ملاحظات سريعة وخطة تحسين)
 - `docs/ARCHITECTURE_OVERVIEW.md` — high-level architecture
 - `docs/REFERENCE-ARCHITECTURE.md` — Clean Architecture and service layering
 - `docs/API-CONTRACTS.md` — API contracts and examples
