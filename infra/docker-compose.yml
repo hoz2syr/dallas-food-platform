@@ -1,5 +1,7 @@
 
 version: "3.8"
+# ⚠️ أمان: لا تستخدم كلمات مرور افتراضية أو متغيرات حساسة مباشرة في هذا الملف للإنتاج.
+# استخدم ملف .env محلي (خارج المستودع) لكل بيئة، وراجع secrets في k8s.
 services:
   rabbitmq:
     image: rabbitmq:3.13-management-alpine

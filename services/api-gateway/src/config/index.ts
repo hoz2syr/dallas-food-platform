@@ -25,7 +25,15 @@ export const config = {
     max: process.env.RATE_LIMIT_MAX_REQUESTS ? parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) : 100,
   },
   cors: {
-    origin: process.env.CORS_ORIGIN || '*',
+    // ⚠️ هام: يجب ضبط CORS_ORIGIN في .env للإنتاج وعدم الاعتماد على '*'
+    // مثال: CORS_ORIGIN="http://localhost:3000,https://your-production-domain.com"
+    origin: process.env.CORS_ORIGIN
+      ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+      : [
+          'http://localhost:3000',
+          'http://localhost:3001',
+          'https://your-production-domain.com'
+        ],
   },
   logging: {
     level: process.env.LOG_LEVEL || 'info',
