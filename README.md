@@ -1,153 +1,273 @@
----
 # Dallas Food Platform
 
-**Vision:** Build a resilient, extensible, and modern food ordering platform for Dallas and beyond.
+**رؤية المشروع:** بناء منصة طلبات طعام مرنة وقابلة للتوسع لمدينة دالاس وما بعدها.
 
-## Key Principles
+**الإصدار:** 2.0.0  
+**آخر تحديث:** فبراير 2026
 
-- Hybrid core + microservices architecture for scalability and autonomy
-- Clean Architecture: clear separation of domain, application, and infrastructure layers
-- API-first, event-ready, and cloud-native by design
-- Developer experience, observability, and security are first-class concerns
+---
 
-## Repository Structure
+## المحتويات
+
+- [نظرة عامة](#نظرة-عامة)
+- [الخدمات المتاحة](#الخدمات-المتاحة)
+- [البنية التقنية](#البنية-التقنية)
+- [كيفية التشغيل](#كيفية-التشغيل)
+- [المتطلبات](#المتطلبات)
+- [المساهمة في المشروع](#المساهمة-في-المشروع)
+- [التوثيق](#التوثيق)
+
+---
+
+## نظرة عامة
+
+منصة دالاس فود هي نظام طلبات طعام متكامل يعتمد على بنية الخدمات المصغرة (Microservices) مع أساس مشترك مركزي. يوفر النظام تجربة سلسة للعملاء والمطاعم وموظفي التوصيل والإدارة.
+
+### المميزات الرئيسية
+
+- 🛒 **نظام طلبات متكامل** - من اختيار الطعام حتى التوصيل
+- 📱 **تطبيقات متعددة** - ويب، تطبيق عميل، لوحة تحكم، عرض المطبخ
+- 🔐 **أمان متقدم** - JWT، تشفير AES-256، تسجيل التدقيق
+- 📊 **تحليلات ولوحات تحكم** - مراقبة الأداء والمبيعات
+- 🔄 **أحداث في الوقت الفعلي** - WebSocket للتبع الفوري للطلبات
+
+---
+
+## الخدمات المتاحة
+
+### الخدمات الخلفية (Backend Services)
+
+| الخدمة | المنفذ | الغرض | المستودع |
+|--------|--------|-------|----------|
+| [Auth Service](services/auth/) | 3001 | المصادقة والتفويض | `services/auth/` |
+| [Menu Service](services/menu/) | 3002 | إدارة قوائم الطعام | `services/menu/` |
+| [Order Service](services/order/) | 3003 | إدارة الطلبات | `services/order/` |
+| [Payment Service](services/payments/) | 3004 | معالجة المدفوعات | `services/payments/` |
+| [Delivery Service](services/delivery/) | 3005 | إدارة التوصيل | `services/delivery/` |
+| [Notification Service](services/notification/) | 3006 | الإشعارات | `services/notification/` |
+| [CRM Service](services/crm/) | 3007 | إدارة علاقات العملاء | `services/crm/` |
+| [Analytics Service](services/analytics/) | 3008 | التحليلات والتقارير | `services/analytics/` |
+| [Reviews Service](services/reviews/) | 3009 | إدارة التقييمات | `services/reviews/` |
+| [Staff Service](services/staff/) | 3010 | إدارة الموظفين | `services/staff/` |
+| [Inventory Service](services/inventory/) | 3011 | إدارة المخزون | `services/inventory/` |
+| [Promotions Service](services/promotions/) | 3012 | العروض والخصومات | `services/promotions/` |
+
+### تطبيقات الواجهة الأمامية (Frontend Apps)
+
+| التطبيق | المنفذ | الغرض |
+|---------|--------|-------|
+| [Web](apps/web/) | 3000 | الموقع الرئيسي |
+| [Customer App](apps/customer-app/) | 3001 | تطبيق الهاتف للعملاء |
+| [Admin Dashboard](apps/admin-dashboard/) | 3002 | لوحة تحكم الإدارة |
+| [Kitchen Display](apps/kitchen-display/) | 3003 | عرض طلبات المطبخ |
+
+---
+
+## البنية التقنية
 
 ```
+┌─────────────────────────────────────────────────────────────┐
+│                    Dallas Food Platform                      │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │                    Presentation Layer               │    │
+│  │  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────┐  │    │
+│  │  │   Web    │ │ Customer │ │  Admin   │ │Kitchen │  │    │
+│  │  │          │ │   App    │ │Dashboard │ │Display │  │    │
+│  │  └──────────┘ └──────────┘ └──────────┘ └────────┘  │    │
+│  └─────────────────────────────────────────────────────┘    │
+│                            │                                 │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │                   API Gateway (Nginx)               │    │
+│  └─────────────────────────────────────────────────────┘    │
+│                            │                                 │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │                   Core Services                     │    │
+│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │    │
+│  │  │  Auth   │ │  Menu   │  │  Order  │ │Payment  │   │    │
+│  │  └─────────┘ └─────────┘ └─────────┘ └─────────┘   │    │
+│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │    │
+│  │  │Delivery │ │  CRM    │ │Analytics│ │Reviews  │   │    │
+│  │  └─────────┘ └─────────┘ └─────────┘ └─────────┘   │    │
+│  └─────────────────────────────────────────────────────┘    │
+│                            │                                 │
+│  ┌─────────────────────────────────────────────────────┐    │
+│  │              Infrastructure Layer                   │    │
+│  │  ┌─────────┐ ┌─────────┐ ┌─────────┐ ┌─────────┐   │    │
+│  │  │Postgres │ │  Redis  │ │RabbitMQ │ │Sentry   │   │    │
+│  │  └─────────┘ └─────────┘ └─────────┘ └─────────┘   │    │
+│  └─────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-```
-services/        # Independent backend services (order, menu, delivery, payments, etc.)
-packages/        # Shared libraries, types, and utilities
-apps/            # Frontend and dashboard applications (web, admin-dashboard, customer-app, kitchen-display)
-infra/           # Infrastructure as code, Docker, Kubernetes, CI/CD
-   └── scripts/   # Automation and operational scripts (moved from root scripts/)
-docs/            # Architecture, ADRs, API contracts, and system documentation
-```
+### التقنيات المستخدمة
 
-Other files moved for clarity:
-- response.txt, PROJECT-REVIEW-REPORT.md, TODO.md → docs/
+| الفئة | التقنية |
+|-------|---------|
+| **اللغة** | TypeScript (Node.js LTS) |
+| **إطار العمل الخلفي** | NestJS |
+| **إطار العمل الأمامي** | Next.js 14 (App Router) |
+| **مدير الحزم** | pnpm 9.x |
+| **قاعدة البيانات** | PostgreSQL 15 |
+| **التخزين المؤقت** | Redis 7 |
+| **الرسائل** | RabbitMQ 3.12 |
+| **الحاويات** | Docker, Docker Compose |
+| **التصعيد** | Kubernetes-ready |
+| **أسلوب API** | REST-first, Event-ready |
 
-Each service follows a standard layout:
+---
 
-- `src/` — implementation (domain, application, infrastructure)
-- `tests/` — unit and integration tests
-- `db/` — migrations and schema (if needed)
-- `Dockerfile` — container build
-- `README.md` — service documentation
+## كيفية التشغيل
 
-## Architecture Overview
-
-This platform uses a "Hybrid Core + Services" model:
-
-- **Core**: Shared authentication, observability, and platform-wide policies
-- **Services**: Small, focused, independently deployable microservices (order, menu, delivery, payments, etc.)
-- **Communication**: REST APIs for synchronous flows, events for async integration
-- **Frontend**: Next.js (App Router), modern UI, API-first
-
-See `docs/ARCHITECTURE_OVERVIEW.md` and `docs/REFERENCE-ARCHITECTURE.md` for details.
-
-## Getting Started
-
-1. Copy `.env.example` to `.env` and configure environment variables
-
-Quickstart (Windows)
-
-1. Enable Corepack and prepare the pinned pnpm version:
+### التشغيل السريع (Windows)
 
 ```powershell
+# 1. تفعيل Corepack وتحضير pnpm
 corepack enable
 corepack prepare pnpm@9.15.5 --activate
-```
 
-2. Install workspace dependencies:
-
-```powershell
+# 2. تثبيت التبعيات
 pnpm install -w
-```
 
-3. Start services locally with Docker Compose (unified example):
-
-```powershell
+# 3. تشغيل جميع الخدمات
 docker compose -f infra/docker-compose.yml up --build
+
+# 4. الوصول للتطبيقات
+# - الويب: http://localhost:3000
+# - لوحة التحكم: http://localhost:3002
+# - تطبيق العميل: http://localhost:3001
 ```
 
-4. Access frontend apps at the configured ports
+### التشغيل التفصيلي
 
-## Configuration & Environments
+```bash
+# نسخ ملف المتغيرات
+cp .env.example .env
 
-All services read configuration from environment variables. Each service must validate required variables at startup and fail fast if missing.
+# تعديل المتغيرات حسب الحاجة
+# nano .env
 
-**Required variables (per service):**
-- `PORT` — HTTP server port
-- `DATABASE_URL` — Postgres connection string
-- `API_KEY` — API key for authentication (if applicable)
+# تشغيل خدمات محددة
+docker compose -f infra/docker-compose.yml up --build postgres redis menu auth
 
-Tip: add a reference table (or file in `docs/`) that lists required env vars per service (Postgres, Redis, RabbitMQ, Stripe, Google Maps, etc.) with example values.
+# مراقبة السجلات
+docker compose logs -f
 
-**Production:**
-- Use your deployment platform's secret/config system. Never commit real secrets.
+# إيقاف جميع الخدمات
+docker compose down
+```
 
-## Authentication & Security
+### التشغيل بدون Docker
 
-All backend APIs are now protected by JWT authentication. You must obtain a valid JWT token from the Auth Service (`/api/auth/login` or `/api/auth/signup`) and include it in the `Authorization: Bearer <token>` header for all requests to protected endpoints.
-
-- **Auth Service**: Provides `/signup`, `/login`, and `/me` endpoints for user management and token issuance.
-- **Public endpoints**: Some endpoints (e.g., `/payments/process`, `/payments/refund`) may be marked as public for demo/testing, but all other APIs require authentication.
-- **How to use:**
-  1. Register or login via the Auth Service to get a JWT.
-  2. Add the token to your API requests:
-     ```http
-     Authorization: Bearer <your-jwt-token>
-     ```
-  3. If you receive a 401 error, your token is missing, expired, or invalid.
-
-See each service's README for more details on authentication requirements and public endpoints.
-
-## Contribution & Development
-
-- Follow ADRs in `docs/DECISIONS` for architecture and technology guidance
-- See `CONTRIBUTING.md` for contribution process
-- Write clear code comments and keep documentation up to date (English only)
-
-## Documentation
-
-- `docs/DOCS-AUDIT.md` — تقرير تدقيق التوثيق (ملاحظات سريعة وخطة تحسين)
-- `docs/ARCHITECTURE_OVERVIEW.md` — high-level architecture
-- `docs/REFERENCE-ARCHITECTURE.md` — Clean Architecture and service layering
-- `docs/API-CONTRACTS.md` — API contracts and examples
-- `docs/SERVICE-BLUEPRINT.md` — service structure and best practices
-
-## License
-
-MIT License — see LICENSE file
----
-   ```bash
-   cp .env.example .env
-   # ثم عدّل القيم حسب الحاجة
-   ```
-1. (Windows) تهيئة Corepack وpnpm:
-   ```powershell
-   corepack enable
-   corepack prepare pnpm@9.15.5 --activate
-   ```
-2. ثبّت التبعيات:
-   ```bash
-   pnpm install -w
-   ```
-3. شغّل جميع الخدمات (أو شغّل خدمات محددة حسب الحاجة):
-   ```bash
-   docker compose -f infra/docker-compose.yml up --build
-   # مثال لتشغيل خدمة واحدة: docker compose -f infra/docker-compose.yml up --build postgres menu
-   ```
-4. راقب السجلات:
-   ```bash
-   docker compose logs -f
-   ```
-
-- ملاحظة Windows: قد تواجه مشاكل طول مسار عند حذف `node_modules`. استخدم `npx rimraf` أو شغّل داخل WSL إذا ظهرت أخطاء.
-- ضع جدول متغيرات البيئة لكل خدمة في `docs/` أو ملف مرجعي داخل `docs/`.
-
-Please follow `CONTRIBUTING.md` and the ADRs in `docs/DECISIONS` when proposing changes that affect architecture, service contracts, or shared packages.
+```bash
+# تشغيل خدمة واحدة (مثال: Menu Service)
+cd services/menu
+pnpm install
+pnpm start:dev
+```
 
 ---
+
+## المتطلبات
+
+### المتطلبات الأساسية
+
+| المتطلب | الإصدار المطلوب | ملاحظات |
+|---------|-----------------|---------|
+| Node.js | LTS (20.x+) | يُنصح بـ 20.x |
+| pnpm | 9.x | مدير الحزم الرئيسي |
+| Docker | 24.x+ | للحاويات |
+| Docker Compose | 2.x+ | لتنسيق الحاويات |
+| PostgreSQL | 15.x | قاعدة البيانات الرئيسية |
+| Redis | 7.x | التخزين المؤقت |
+| RabbitMQ | 3.12 | رسائل الخدمة |
+
+### متغيرات البيئة المطلوبة
+
+```bash
+# === قاعدة البيانات ===
+DATABASE_URL=postgresql://user:password@localhost:5432/dallas_food
+
+# === Redis ===
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# === RabbitMQ ===
+RABBITMQ_URL=amqp://admin:password@localhost:5672
+
+# === المصادقة ===
+JWT_SECRET=your-32-char-secret-key
+JWT_REFRESH_SECRET=your-32-char-refresh-secret
+
+# === التشفير ===
+ENCRYPTION_KEY=your-256-bit-key
+
+# ===_ports ===
+PORT=3000
+```
+
 ---
+
+## المساهمة في المشروع
+
+### إرشادات المساهمة
+
+1. **إنشاء Fork من المستودع**
+2. **إنشاء فرع جديد للميزة**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+3. **كتابة الكود مع الالتزام بالمعايير**
+4. **إضافة الاختبارات**
+5. **إرسال Pull Request**
+
+### معايير الكود
+
+- اتبع تنسيق TypeScript القياسي
+- استخدم ESLint و Prettier
+- اكتب اختبارات Unit للـ Domain و Application
+- وثق التغييرات في CHANGELOG.md
+
+### الالتزام بقرارات التصميم
+
+راجع ملفات ADR في [`docs/DECISIONS/`](docs/DECISIONS/) قبل إجراء تغييرات تؤثر على البنية.
+
+---
+
+## التوثيق
+
+| الملف | الوصف |
+|-------|-------|
+| [README.md](README.md) | هذا الملف - نظرة عامة |
+| [PRODUCTION_READINESS.md](PRODUCTION_READINESS.md) | دليل جاهزية الإنتاج |
+| [SECURITY.md](SECURITY.md) | سياسات الأمان |
+| [docs/ARCHITECTURE_OVERVIEW.md](docs/ARCHITECTURE_OVERVIEW.md) | نظرة عامة على البنية |
+| [docs/SERVICE-BLUEPRINT.md](docs/SERVICE-BLUEPRINT.md) | معايير الخدمات |
+| [docs/API-CONTRACTS.md](docs/API-CONTRACTS.md) | عقود API |
+| [docs/REFERENCE-ARCHITECTURE.md](docs/REFERENCE-ARCHITECTURE.md) | بنية مرجعية |
+| [docs/DOCS-AUDIT.md](docs/DOCS-AUDIT.md) | تدقيق التوثيق |
+| [docs/PLATFORM_STATUS_REPORT_AR.md](docs/PLATFORM_STATUS_REPORT_AR.md) | تقرير حالة المنصة الشامل (عربي) |
+
+---
+
+## التغييرات الأخيرة
+
+### الإصدار 2.0.0 (فبراير 2026)
+
+- ✨ إضافة خدمة Staff Management
+- ✨ إضافة خدمة Inventory Management
+- ✨ إضافة خدمة Promotions
+- 🔐 تحسين أمان JWT مع RS256
+- 📊 إضافة لوحة تحكم Analytics
+- 🐛 إصلاح مشاكل الأداء في Order Service
+- 📚 تحديث جميع ملفات التوثيق
+
+---
+
+## الترخيص
+
+MIT License - راجع [LICENSE](LICENSE) للمزيد من التفاصيل.
+
+---
+
+**للتواصل:** dev@dallasfood.example.com
