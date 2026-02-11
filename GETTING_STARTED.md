@@ -101,6 +101,7 @@ docker compose -f infra/docker-compose.yml up --build
 - **Architecture:** docs/ARCHITECTURE_OVERVIEW.md
 - **API Contracts:** docs/API-CONTRACTS.md
 - **Service Blueprints:** docs/SERVICE-BLUEPRINT.md
+- **ZIP Code Documentation:** docs/ZIP_CODE_EXPLANATION_AR.md (العربية) / docs/ZIP_CODE_EXPLANATION_EN.md (English)
 - **Decisions & ADRs:** docs/DECISIONS/
 - **Contribution Guide:** CONTRIBUTING.md
 - **Automation Scripts:** infra/scripts/ (all operational scripts are now here)
