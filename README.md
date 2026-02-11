@@ -247,6 +247,7 @@ PORT=3000
 | [docs/REFERENCE-ARCHITECTURE.md](docs/REFERENCE-ARCHITECTURE.md) | بنية مرجعية |
 | [docs/DOCS-AUDIT.md](docs/DOCS-AUDIT.md) | تدقيق التوثيق |
 | [docs/PLATFORM_STATUS_REPORT_AR.md](docs/PLATFORM_STATUS_REPORT_AR.md) | تقرير حالة المنصة الشامل (عربي) |
+| [docs/ZIP_CODE_EXPLANATION_AR.md](docs/ZIP_CODE_EXPLANATION_AR.md) | شرح استخدام الأكواد البريدية في المنصة |
 
 ---
 
